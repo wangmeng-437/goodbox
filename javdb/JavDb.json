@@ -1,0 +1,18 @@
+{
+    "spider": "./0.jar",
+    "sites": [
+        {
+            "key": "csp_JavDb",
+            "name": "🔞🧲JavDb",
+            "type": 3,
+            "api": "csp_JavDb",
+            "searchable": 1,
+            "quickSearch": 1,
+            "filterable": 1,
+            "changeable": 0,
+            "timeout": 1801,
+            "ext": "http://javdb523.com",
+            "jar": "./p.jar"
+        }
+    ]
+}
