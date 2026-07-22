@@ -8,7 +8,7 @@
 			"searchable": 1,
 			"quickSearch": 1,
 			"filterable": 1,
-			"api": "./javdb6.py",
+			"api": "./javdb7.py",
 			"order_num": 5,
 			"ext": ""
 		}
