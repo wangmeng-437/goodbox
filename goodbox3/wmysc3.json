@@ -1,6 +1,6 @@
 {"spider":"https://gh-proxy.com/raw.githubusercontent.com/wangmeng-437/goodbox/refs/heads/main/goodbox3/spider.jar",
 "sites":[
-{"key":"潇洒_之王","name":"潇洒-合集","type":3,"api":"./drpy2.min.js","ext":"./采集之王.js?type=url&params=./合集.json","searchable":1,"quickSearch":1,"changeable":1,"filterable":1,"timeout":30},
+{"key":"潇洒_之王","name":"潇洒-合集","type":3,"api":"./drpy2.min.js","ext":"./采集之王.js?type=url&params=./采集集合.json","searchable":1,"quickSearch":1,"changeable":1,"filterable":1,"timeout":30},
 {"key":"采集","name":"zhangqun1818-合集","type":4,"api":"http://zhangqun1818.serv00.net/cj/cjjh.php","style":{"type":"rect","ratio":1.33},"ext":"0","changeable":1},
 {"key":"采集合集py","name":"采集合集(py)+","type":3,"api":"./采集合集.py","searchable":1,"quickSearch":1,"filterable":1,"changeable":1,"playerType":2,"ext":"0"},
 {"key":"合集","name":"合集json","type":4,"api":"./合集.json","searchable":0,"quickSearch":0,"filterable":0,"indexs":1},
