@@ -1,4 +1,8 @@
 {
+"heads": {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"},
+"headers": [
+{"host": "hlsztemgsplive.miguvideo.com","header": {"User-Agent": "bingcha1.1 (mianfeifenxiang)"}}
+],
 "spider": "https://gh-proxy.com/raw.githubusercontent.com/wangmeng-437/goodbox/refs/heads/main/wxe/fantaiying.jar",
 "sites": [
 {"key":"Douban","name":"🛩️小猛子剽窃二小和饭硬🛩️","type":3,"api":"csp_DoubanGuard","jar":"./wxe.jar","searchable":0,"quickSearch":0,"filterable":0,"ext":"./fenlei.txt"},
