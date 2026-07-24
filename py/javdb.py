@@ -1,192 +1,141 @@
-# -*- coding: utf-8 -*-
-# by @汤圆
+
+# javdb.py
 import re
-import sys
-from pyquery import PyQuery as pq
-sys.path.append('..')
-from base.spider import Spider
+import scrapy
+from helper.loguru_config import logu
+from helper.global_config import config
+#
+
+# 笔记📒 可单独 执行 该 spider :  scrapy crawl javdb -O javdb.json
 
 
-class Spider(Spider):
+class JavdbSpider(scrapy.Spider):
 
-    def init(self, extend=""):
-        pass
+    name = "javdb"
+    start_urls = ['https://javdb.com/v/Yn4bz']
 
-    def getName(self):
-        return "DB563"
+    def __init__(self, start_url=None, *args, **kwargs):
+        super(JavdbSpider, self).__init__(*args, **kwargs)
+        self.start_urls = [start_url] if start_url else ['https://javdb.com/v/Yn4bz']
+    # 定制 start_requests 方法,同名key优先级会高于setting.py里的配置.
+    # 注入cookies
 
-    def isVideoFormat(self, url):
-        pass
-
-    def manualVideoCheck(self):
-        pass
-
-    def destroy(self):
-        pass
-
-    host = "https://javdb563.com"
-
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 15; 23113RKC6C Build/AQ3A.240912.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/140.0.7339.207 Mobile Safari/537.36',
-        'Cookie': '',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-        'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8'
-    }
-
-    def _fix_mojibake(self, s):
-        if not s:
-            return s
-        # Detect common mojibake markers like 'Ã', 'Â', 'ä', 'å', 'æ' from UTF-8 decoded as Latin-1
-        try:
-            if re.search(r'[ÃÂäåæçèéìíòóùúÄÅÆÇÈÉÌÍÒÓÙÚ]', s):
-                return s.encode('latin1', 'ignore').decode('utf-8', 'ignore')
-        except Exception:
-            pass
-        return s
-
-    def homeContent(self, filter):
-        data = self.getpq("/")
-        result = {}
-        
-        # 分类信息
-        classes = [
-            {'type_name': '全部', 'type_id': ''},       
-            {'type_name': '无码', 'type_id': 'uncensored'},
-            {'type_name': '人气标题', 'type_id': 'tags/uncensored?c5=117&c10=1'},
-            {'type_name': '欧美', 'type_id': 'western'},
-            {'type_name': '捆绑', 'type_id': 'tags/uncensored?c10=1&c2=14'},
-            {'type_name': '束缚', 'type_id': 'tags/uncensored?c2=7&c10=1'},
-            {'type_name': '潮吹', 'type_id': 'tags/uncensored?c2=29&c10=1'},
-            {'type_name': '性奴', 'type_id': 'tags/uncensored?c10=1&c2=32'}
-        ]
-        
-        result['class'] = classes
-        result['list'] = self.getlist(data)
-        return result
-
-    def homeVideoContent(self):
-        pass
-
-    def categoryContent(self, tid, pg, filter, extend):
-        # 构建URL
-        if tid == '':
-            # 全部分类
-            if pg == 1:
-                url = "/"
-            else:
-                url = f"/?page={pg}"
-        else:
-            # 其他分类
-            if pg == 1:
-                url = f"/{tid}"
-            else:
-                # 检查是否已经包含查询参数
-                if '?' in tid:
-                    url = f"/{tid}&page={pg}"
-                else:
-                    url = f"/{tid}?page={pg}"
-        
-        data = self.getpq(url)
-        result = {}
-        result['list'] = self.getlist(data)
-        result['page'] = pg
-        result['pagecount'] = 9999
-        result['limit'] = 90
-        result['total'] = 999999
-        return result
-
-    def detailContent(self, ids):
-        data = self.getpq(ids[0])
-        
-        # 获取基本信息
-        title = data('.video-title strong').text()
-        if not title:
-            title = data('h1').text()
-        title = self._fix_mojibake((title or '').strip())
-        
-        vod = {
-            'vod_id': ids[0],
-            'vod_name': title,
-            'vod_pic': data('.cover img').attr('src'),
-            'vod_year': self._fix_mojibake((data('.meta').text() or '').strip()),
-            'vod_remarks': self._fix_mojibake((data('.score .value').text() or '').strip()),
-            'vod_content': self._fix_mojibake((data('.video-title').text() or '').strip())
+    def start_requests(self):
+        # 从 实际浏览器 读取的 header
+        headers = {
+            "Host": "javdb.com",
+            "Connection": "keep-alive",
+            "Pragma": "no-cache",
+            "Cache-Control": "no-cache",
+            "sec-ch-ua": '"Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "macOS",
+            "DNT": "1",
+            "Upgrade-Insecure-Requests": "1",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "Sec-Fetch-Site": "none",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-User": "?1",
+            "Sec-Fetch-Dest": "document",
+            # "Accept-Encoding": "gzip, deflate, br, zstd", #开了会乱码 scrapy 似乎不能自动处理 gzip解压缩
+            "Accept-Language": "zh-CN,zh;q=0.9,zh-TW;q=0.6,ja;q=0.5,en-US;q=0.8,en;q=0.7",
         }
-        
-        # 获取磁力链接
-        magnets = []
-        magnet_items = data('#magnets-content .item')
-        
-        for item in magnet_items.items():
-            magnet_name_elem = item('.magnet-name a')
-            magnet_url = magnet_name_elem.attr('href')
-            magnet_title = self._fix_mojibake((magnet_name_elem.text() or '').strip())
-            
-            if magnet_url and magnet_url.startswith('magnet:'):
-                magnets.append(f"{magnet_title}${magnet_url}")
-        
-        vod["vod_play_from"] = "磁力链接"
-        vod["vod_play_url"] = "#".join(magnets) if magnets else f"{title}${ids[0]}"
-        
-        result = {"list": [vod]}
-        return result
+        # 必须是中文(只有繁体) 才能匹配到电影数据
+        _default_cookies = {'locale': 'zh', }
 
-    def searchContent(self, key, quick, pg="1"):
-        # 构建搜索URL
-        search_url = f"/search?q={key}"
-        if pg != "1":
-            search_url += f"&page={pg}"
-        
-        data = self.getpq(search_url)
-        result = {}
-        result['list'] = self.getlist(data)
-        result['page'] = int(pg)
-        result['pagecount'] = 9999
-        result['limit'] = 90
-        result['total'] = 999999
-        return result
+        cookies = {**config.scrape.javdb.cookies, **_default_cookies}
+        for url in self.start_urls:
+            yield scrapy.Request(url, headers=headers, cookies=cookies, callback=self.parse)
 
-    def playerContent(self, flag, id, vipFlags):
-        # 直接返回磁力链接，播放器会处理
-        return {'parse': 0, 'url': id, 'header': self.headers}
+    def parse(self, response):
+        LOGGER = logu(__name__)
+        # 这一块是详情
+        detail_content = response.css('div.video-detail')
+        # SSNI-549
+        # code = detail.css('strong::text').get() # css选择器 简单,但是不如xpath灵活功能丰富
+        # '絶頂してピクピクしているおま●こを容赦なく突きまくる怒涛のおかわり激ピストン性交 星宮一花 '
+        title = detail_content.css('strong.current-title::text').get()  # css选择器
 
-    def localProxy(self, param):
-        pass
+        movie_code_series = detail_content.xpath('//div[contains(strong/text(), "番號")]/span[@class="value"]/a/text()').get('')  # 可能空
+        movie_number = response.xpath('//div[contains(@class, "panel-block") and contains(strong/text(), "番號")]/span[@class="value"]/text()').get()
+        # 番号
+        code = movie_code_series + movie_number
+        # 番号系列URL
+        movie_code_series_url_path = detail_content.xpath('//div[contains(strong/text(), "番號")]/span[@class="value"]/a/@href').get()  # 如 /video_codes/ABP
+        # 发行日期
+        release_date = detail_content.xpath('//div[contains(strong/text(), "日期:")]/span[@class="value"]/text()').get()  # '2017-01-27'
+        # 時長
+        duration = detail_content.xpath('//div[contains(strong/text(), "時長:")]/span[@class="value"]/text()').get()  # '120分鐘'
+        # 導演
+        director = detail_content.xpath('//div[contains(strong/text(), "導演:")]/span[@class="value"]/a/text()').get()
+        # 片商
+        maker = detail_content.xpath('//div[contains(strong/text(), "片商:")]/span[@class="value"]/a/text()').get()
+        # 發行
+        publisher = detail_content.xpath('//div[contains(strong/text(), "發行:")]/span[@class="value"]/a/text()').get()
+        # 系列:
+        series = detail_content.xpath('//div[contains(strong/text(), "系列:")]/span[@class="value"]/a/text()').get()
+        # 評分: 5分制
+        _ratingContent = detail_content.xpath('//div[contains(strong/text(), "評分:")]/span[@class="value"]/text()').get()
+        rating = re.search(r'(?<=\xa0)(.+)(?=分)', _ratingContent)
+        # 類別:
+        tags = detail_content.xpath('//div[contains(strong/text(), "類別:")]/span[@class="value"]/a/text()').getall()  # ['拘束', '單體作品','玩具']
+        # 演員:
+        # ['松永さな', '森林原人', '佐川銀次', 'セツネヒデユキ', '南佳也', '岩沢', 'ザーメン二郎', 'イェーイ高島']
+        actors = detail_content.xpath('//div[contains(strong/text(), "演員:")]/span[@class="value"]/a/text()').getall()
 
-    def getlist(self, data):
-        videos = []
-        items = data('.movie-list .item')
-        
-        for item in items.items():
-            link_elem = item('a.box')
-            if not link_elem:
-                continue
-                
-            href = link_elem.attr('href')
-            title = self._fix_mojibake((link_elem.attr('title') or '').strip())
-            img_src = item('img').attr('src')
-            meta_text = self._fix_mojibake((item('.meta').text() or '').strip())
-            
-            videos.append({
-                'vod_id': href,
-                'vod_name': title,
-                'vod_pic': img_src,
-                'vod_remarks': meta_text,
-                'vod_year': meta_text  # 使用日期作为年份
-            })
-        
-        return videos
+        # 磁力链接
+        magnet_links = response.xpath('//div[@id="magnets-content"]/div[contains(@class,"item")]/div[contains(@class,"buttons")]/button/@data-clipboard-text').getall()
 
-    def getpq(self, path=''):
-        url = f"{self.host}{path}" if not path.startswith('http') else path
-        rsp = self.fetch(url, headers=self.headers)
-        # Prefer raw bytes to avoid wrong intermediate decoding
-        content = rsp.content
-        try:
-            return pq(content)
-        except Exception as e:
-            print(f"解析错误: {str(e)}")
-            try:
-                return pq(content.decode('utf-8', 'ignore'))
-            except Exception:
-                return pq(rsp.text)
+        #  封面URL
+        cover_url = response.xpath('//a[@class="cover-container"]/img/@src').get()
+        # 预览图URL(样本图)
+        preview_image_urls = response.xpath('//div[@class="tile-images preview-images"]/a/@href').getall()
+        # 排名标签 TOP250
+        # ranking_tags = response.xpath('//div[@class="control ranking-tags"]/a/span/text()').getall()
+        # 首先获取所有的 div 元素
+        _ranking_tags_doms = response.xpath('//div[@class="control ranking-tags"]/a[@class="tags has-addons"]')
+        # 对于每个 div 元素，获取其内部的 a 标签的文本 : [['No.79', 'JavDB 影片TOP250'], ['No.69', 'JavDB 有碼影片TOP250'], ['No.2', 'JavDB 2017年度TOP250']]
+        ranking_tags = [div.xpath('.//span/text()').getall() for div in _ranking_tags_doms]
+
+        LOGGER.info(title, movie_code_series, movie_number)
+        return {
+            'title': title,
+            'code': code,
+            'movie_code_series': movie_code_series,
+            'movie_number': movie_number,
+            'movie_code_series_url_path': movie_code_series_url_path,
+            'release_date': release_date,
+            'duration': duration,
+            'director': director,
+            'maker': maker,
+            'publisher': publisher,
+            'series': series,
+            'rating': rating.group(1) if rating else None,
+            'tags': tags,
+            'actors': actors,
+            'magnet_links': magnet_links,
+            'cover_url': cover_url,
+            'preview_image_urls': preview_image_urls,
+            'ranking_tags': ranking_tags,
+        }
+        # yield {
+        #     'title': title,
+        #     'code': code,
+        #     # 'movie_code_series': movie_code_series,
+        #     # 'movie_number': movie_number,
+        #     # 'movie_code_series_url_path': movie_code_series_url_path,
+        #     # 'release_date': release_date,
+        #     # 'duration': duration,
+        #     # 'director': director,
+        #     # 'maker': maker,
+        #     # 'publisher': publisher,
+        #     # 'series': series,
+        #     # 'rating': rating.group(1) if rating else None,
+        #     # 'tags': tags,
+        #     # 'actors': actors,
+        #     # 'magnet_links': magnet_links,
+        #     # 'cover_url': cover_url,
+        #     # 'preview_image_urls': preview_image_urls,
+        #     # 'ranking_tags': ranking_tags,
+        # }
