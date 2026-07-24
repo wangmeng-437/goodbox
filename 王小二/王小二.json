@@ -48,21 +48,21 @@
 {"name":"新视觉嗅探","hosts":["muzhi-video.bj.bcebos.com"],"regex":["202403/"]},
 {"name":"七新嗅探","hosts":["api.52wyb.com"],"regex":["m3u8?pt=m3u8"]},
 {"name":"夜市點擊","hosts":["yeslivetv.com"],"script":["document.getElementsByClassName('vjs-big-play-button')[0].click()"]},
-{"name":"毛驢點擊","hosts":["www.maolvys.com"],"script":["document.getElementsByClassName('swal-button swal-button--confirm')[0].click()"]}],"ads":["mozai.4gtv.tv","pv.vipwm.cc","static-mozai.4gtv.tv"],"lives":[{"name":"Kimentanm","type":0,"url":"https://ghfast.top/https://raw.githubusercontent.com/Kimentanm/aptv/master/m3u/iptv.m3u","playerType":2},
-{"name":"综合直播","type":0,"playerType":2,"url":"https://ghfast.top/https://raw.githubusercontent.com/develop202/migu_video/refs/heads/main/interface.txt","ua":"bingcha/1.1 (mianfeifenxiang) "}],"headers":[{"host":"hlsztemgsplive.miguvideo.com","header":{"User-Agent":"bingcha/1.1 (mianfeifenxiang) "}}
+{"name":"毛驢點擊","hosts":["www.maolvys.com"],"script":["document.getElementsByClassName('swal-button swal-button--confirm')[0].click()"]}
 ],
 
-"headers": [
-{"host": "hlsztemgsplive.miguvideo.com","header": {"User-Agent": "bingcha/1.1 (mianfeifenxiang) "}}
+"ads":[
+"mozai.4gtv.tv","pv.vipwm.cc","static-mozai.4gtv.tv"
 ],
 
 "lives":[
 {"name":"develop202","type":0,"url":"https://gh.927223.xyz/https://raw.githubusercontent.com/develop202/migu_video/refs/heads/main/interface.txt","playerType":2,"epg":"http://diyp5.112114.xyz/?ch={name}&date={date}","logo": "https://epg.112114.xyz/logo/{name}.png"},
-{"name":"Kimentanm","type":0,"url":"https://gh.927223.xyz/https://raw.githubusercontent.com/Kimentanm/aptv/master/m3u/iptv.m3u","playerType":2},
-{"name":"范明明（需开启V6网络）","type":0,"url":"https://nos.netease.com/ysf/3d75a78a0fc7ede372c03598d6d10367.m3u","playerType":2},
-{"name":"虎牙一起看","type":0,"url":"https://sub.ottiptv.cc/huyayqk.m3u","playerType":2,"timeout":10,"ua":"okHttp/Mod-1.5.0.0"},
-{"name":"斗鱼一起看","type":0,"url":"https://sub.ottiptv.cc/douyuyqk.m3u","playerType":2,"timeout":10,"ua":"okHttp/Mod-1.5.0.0"},
-{"name":"B站直播","type":0,"url":"https://sub.ottiptv.cc/bililive.m3u","playerType":2,"timeout":10,"ua":"okHttp/Mod-1.5.0.0"},
-{"name":"YY轮播","type":0,"url":"https://sub.ottiptv.cc/yylunbo.m3u","playerType":2,"timeout":10,"ua":"okHttp/Mod-1.5.0.0"}
-]
+{"name":"Kimentanm","type":0,"url":"https://ghfast.top/https://raw.githubusercontent.com/Kimentanm/aptv/master/m3u/iptv.m3u","playerType":2},
+{"name":"综合直播","type":0,"playerType":2,"url":"https://ghfast.top/https://raw.githubusercontent.com/develop202/migu_video/refs/heads/main/interface.txt","ua":"bingcha/1.1 (mianfeifenxiang) "}
+],
+
+"headers":[
+{"host":"hlsztemgsplive.miguvideo.com","header":{"User-Agent":"bingcha/1.1 (mianfeifenxiang) "}}
+],
+
 }
