@@ -1,27 +1,14 @@
 {
 "spider":"./wxe.jar;md5;1ae5f93acddd711b89098828735eedd6",
 "sites":[
-{"key":"Douban","name":"🛩️小猛子剽窃王二小🛩️","type":3,"api":"csp_DoubanGuard","searchable":0,"quickSearch":0,"filterable":0,"ext":"./fenlei.txt"},
-{"key":"bili","name":"🅱哔哔┃合集🅱","type":3,"api":"csp_BiliGuard","searchable":1,"quickSearch":1,"filterable":1,"style":{"type":"rect","ratio":1.433},"ext":{"json":"./bili001.txt"}},
-{"key":"瓜子","name":"瓜子┃不卡","type":3,"api":"csp_AppgzGuard","jar":"./fantaiying.jar","timeout":15,"playerType":"2","searchable":1,"quickSearch":1,"changeable":1},
-{"key":"Wexhanxiaoquan","name":"韩剧┃秒播","type":3,"api":"csp_WexhanxiaoquanGuard","searchable":1,"changeable":1},
+{"key":"Douban","name":"🛩️小猛子剽窃二小和饭硬🛩️","type":3,"api":"csp_DoubanGuard","searchable":0,"quickSearch":0,"filterable":0,"ext":"./fenlei.txt"},
 {"key":"賤賤","name":"荐片┃p2p","type":3,"api":"csp_WexJianpianGuard","searchable":1,"changeable":1},
+{"key":"Wexhanxiaoquan","name":"韩剧┃秒播","type":3,"api":"csp_WexhanxiaoquanGuard","searchable":1,"changeable":1},
+{"key":"bili","name":"🅱哔哔┃合集🅱","type":3,"api":"csp_BiliGuard","searchable":1,"quickSearch":1,"filterable":1,"style":{"type":"rect","ratio":1.433},"ext":{"json":"./bili001.txt"}},
+{"key":"Biliych","name":"🅱哔哔演唱会┃弹幕","type": 3,"api": "csp_BiliGuard","jar":"./fantaiying.jar","style":{"type":"rect","ratio":1.597},"searchable":0,"quickSearch":0,"changeable":0,"ext":{"json":"https://nos.netease.com/ysf/6496356286589c68f52c2f99c0c674c7.txt"}},
+{"key":"MTV","name":"明星┃MV","type":3,"api":"csp_BiliGuard","jar":"./fantaiying.jar","style":{"type":"rect","ratio":1.597},"searchable":0,"quickSearch":0,"changeable":0,"ext":{"json":"https://nos.netease.com/ysf/5af5fbe12a88b7c45aa1c21e6551826c.txt"}},
 {"key":"荐片","name":"荐片┃多线","type":3,"api":"csp_JPJGuard","jar":"./fantaiying.jar","timeout":10,"playerType":2,"searchable":1,"quickSearch":1,"changeable":0},
-{"key":"WexkuihuatvGuard","name":"葵花┃影视","type":3,"api":"csp_WexkuihuatvGuard","searchable":1,"changeable":1},
-{"key":"csp_Nmys","name":"伯伯┃秒播","type":3,"api":"csp_WexNmysGuard","searchable":1,"changeable":1},
-{"key":"WexbttwoGuard","name":"大鼻涕┃秒播","type":3,"api":"csp_WexbttwoGuard","searchable":1,"changeable":1},
-{"key":"WexikanbotGuard","name":"爱看┃采集","type":3,"api":"csp_WexikanbotGuard","searchable":1,"changeable":1},
-{"key":"新6V","name":"新6V┃P2P","type":3,"api":"csp_WexXb6vGuard","searchable":1,"changeable":0},
-{"key":"WexNewHuYa","name":"‍虎牙┃直播‍","type":3,"api":"csp_WexNewHuYaGuard","searchable":1,"changeable":1},
-{"key":"WexNewDouYu","name":"斗鱼┃直播","type":3,"api":"csp_WexNewDouYuGuard","searchable":1,"changeable":1},
-{"key":"Wexduanjuvop","name":"短剧┃秒播","type":3,"api":"csp_WexduanjuvopGuard","searchable":1,"changeable":1},
-{"key":"Wexduanjuvmp","name":"短剧┃瞬播","type":3,"api":"csp_WexduanjuvmpGuard","searchable":1,"changeable":1},
-{"key":"Wexduanjuhema","name":"短剧┃仙品","type":3,"api":"csp_WexduanjuhemaGuard","searchable":1,"changeable":1},
-{"key":"Wexduanju001","name":"短剧┃神品","type":3,"api":"csp_Wexduanju001Guard","searchable":1,"changeable":1},
-{"key":"Wexlaobaitingshu","name":"‍白兔┃听书","type":3,"api":"csp_WexlaobaitingshuGuard","searchable":1,"changeable":1},
-{"key":"Wex275tingshu","name":"‍极品┃听书","type":3,"api":"csp_Wex275tingshuGuard","searchable":1,"changeable":1},
-{"key":"WexLunhuiDJ","name":"轮回┃舞曲","type":3,"api":"csp_WexLunhuiDJGuard","searchable":1,"changeable":0},
-
+{"key":"瓜子","name":"瓜子┃不卡","type":3,"api":"csp_AppgzGuard","jar":"./fantaiying.jar","timeout":15,"playerType":"2","searchable":1,"quickSearch":1,"changeable":1},
 {"key":"光影","name":"光影┃不卡","type":3,"api":"csp_T4Guard","jar":"./fantaiying.jar","searchable":1,"quickSearch":1,"changeable":0,"ext":"rfOIzPkSUkANv6AT2prC8en3+Trbx4j10CIoZMv3Ag4bdEYQqTMqu/Z3YPtC2NJv6n6YeZdgyWlo4WJjBL5gUt6B7LvCEDT4CLrWka31GRq7jwVkfQRB/Jy9HkG7E8xUBIJi5DdVFk3qAuGnwUWqQNRblRxzHW+tdSm6zoFcG/QkZ97bzWOXn0fzbgwjBDkBHgcPIYjlULlctCNKgJ9DzGNSl+zMZDZgmxczsZeeahRS38Cst3qvaHn1T2lmLBGVGXPaRovi77LPRRDOJSNRrdpvCHdRikYwgar0MU56hXMGeGBiKp/OmGTIYR8dFRGvZ/m8xGOqs8U13h6wvADOGlYoP9VaQBqTcDnz9Q0Urhw3oFXWyvIlUrDhX9la5L2NYzagbyk3afqhxeSXXp07nAFsNy2CojHRTbmz4eohLoIJTSi2DzPpheVx1DAapfgRdTc7Ax5ddYpN338GiDAa0GnEgLe04a1pZ5jF+/Q7HJswqlSO+DXCQ3FjRbb/ZPQcozcCWwzhUHE1QUAt799V9DPMuiHGyudIcZarGQmezB+Lb45RdHIRy0PXD+NRVPJlfDFD5FMGSqsiVklibvuwlVHT8J5vHgh/1nEZoI1RlYYLrkjTts2EeQmrpB/sgLyo1vnjFw=="},
 {"key":"原创","name":"原创┃不卡","type":3,"api":"csp_YCyzGuard","jar":"./fantaiying.jar","timeout":15,"playerType":1,"searchable":1,"quickSearch":1,"changeable":1},
 {"key":"厂长","name":"厂长┃不卡","type":3,"api":"csp_NewCzGuard","jar":"./fantaiying.jar","timeout":10,"playerType":2,"searchable":1,"quickSearch":1,"changeable":1},
@@ -38,8 +25,7 @@
 {"key":"咕咕","name":"咕咕┃动漫","type":3,"api":"csp_AppSxGuard","jar":"./fantaiying.jar","timeout":10,"searchable":1,"quickSearch":1,"changeable":1,"ext":"rfOX1voDIQhH8epBwpmIsuS/sSCZxc/l0mxkeoroQVYOelMAvX1kuYptSLB36YxEjVawS9p37Cgo"},
 {"key":"Dm84","name":"巴士┃动漫","type":3,"api":"csp_Dm84Guard","jar":"./fantaiying.jar","timeout":10,"searchable":1,"quickSearch":1,"changeable":1},
 {"key":"Anime1","name":"日本┃动漫","type":3,"api":"csp_Anime1Guard","jar":"./fantaiying.jar","timeout":10,"searchable":1,"quickSearch":1,"changeable":1},
-{"key":"alllive","name":"一直播┃直播","type":3,"api":"csp_AllliveGuard","jar":"./fantaiying.jar","style":{"type":"rect","ratio":1.597},"timeout":15,"playerType":"2","searchable":0,"quickSearch":0,"changeable":0,"ext":"uqGL1fpJNAUN8ORQgIPD+b6l+CzC2t8="},
-{"key":"MTV","name":"明星┃MV","type":3,"api":"csp_BiliGuard","jar":"./fantaiying.jar","style":{"type":"rect","ratio":1.597},"searchable":0,"quickSearch":0,"changeable":0,"ext":{"json":"https://nos.netease.com/ysf/5af5fbe12a88b7c45aa1c21e6551826c.txt"}}
+{"key":"alllive","name":"一直播┃直播","type":3,"api":"csp_AllliveGuard","jar":"./fantaiying.jar","style":{"type":"rect","ratio":1.597},"timeout":15,"playerType":"2","searchable":0,"quickSearch":0,"changeable":0,"ext":"uqGL1fpJNAUN8ORQgIPD+b6l+CzC2t8="}
 ],
 
 "parses":[
@@ -64,5 +50,15 @@
 {"name":"夜市點擊","hosts":["yeslivetv.com"],"script":["document.getElementsByClassName('vjs-big-play-button')[0].click()"]},
 {"name":"毛驢點擊","hosts":["www.maolvys.com"],"script":["document.getElementsByClassName('swal-button swal-button--confirm')[0].click()"]}],"ads":["mozai.4gtv.tv","pv.vipwm.cc","static-mozai.4gtv.tv"],"lives":[{"name":"Kimentanm","type":0,"url":"https://ghfast.top/https://raw.githubusercontent.com/Kimentanm/aptv/master/m3u/iptv.m3u","playerType":2},
 {"name":"综合直播","type":0,"playerType":2,"url":"https://ghfast.top/https://raw.githubusercontent.com/develop202/migu_video/refs/heads/main/interface.txt","ua":"bingcha/1.1 (mianfeifenxiang) "}],"headers":[{"host":"hlsztemgsplive.miguvideo.com","header":{"User-Agent":"bingcha/1.1 (mianfeifenxiang) "}}
+]
+
+"lives":[
+{"name":"develop202","type":0,"url":"https://gh.927223.xyz/https://raw.githubusercontent.com/develop202/migu_video/refs/heads/main/interface.txt","playerType":2,"epg":"http://diyp5.112114.xyz/?ch={name}&date={date}","logo": "https://epg.112114.xyz/logo/{name}.png"},
+{"name":"Kimentanm","type":0,"url":"https://gh.927223.xyz/https://raw.githubusercontent.com/Kimentanm/aptv/master/m3u/iptv.m3u","playerType":2},
+{"name":"范明明（需开启V6网络）","type":0,"url":"https://nos.netease.com/ysf/3d75a78a0fc7ede372c03598d6d10367.m3u","playerType":2},
+{"name":"虎牙一起看","type":0,"url":"https://sub.ottiptv.cc/huyayqk.m3u","playerType":2,"timeout":10,"ua":"okHttp/Mod-1.5.0.0"},
+{"name":"斗鱼一起看","type":0,"url":"https://sub.ottiptv.cc/douyuyqk.m3u","playerType":2,"timeout":10,"ua":"okHttp/Mod-1.5.0.0"},
+{"name":"B站直播","type":0,"url":"https://sub.ottiptv.cc/bililive.m3u","playerType":2,"timeout":10,"ua":"okHttp/Mod-1.5.0.0"},
+{"name":"YY轮播","type":0,"url":"https://sub.ottiptv.cc/yylunbo.m3u","playerType":2,"timeout":10,"ua":"okHttp/Mod-1.5.0.0"}
 ]
 }
