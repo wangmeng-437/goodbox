@@ -1,8 +1,6 @@
 {
 "spider":"./wxe.jar;md5;1ae5f93acddd711b89098828735eedd6",
 
-"heads":{"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"},
-
 "headers": [{
 		"host": "hlsztemgsplive.miguvideo.com",
 		"header": {
