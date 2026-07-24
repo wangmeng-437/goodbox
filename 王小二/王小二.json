@@ -10,7 +10,6 @@
 {"key":"荐片","name":"荐片┃多线","type":3,"api":"csp_JPJGuard","jar":"./fantaiying.jar","timeout":10,"playerType":2,"searchable":1,"quickSearch":1,"changeable":0},
 {"key":"WexkuihuatvGuard","name":"葵花┃影视","type":3,"api":"csp_WexkuihuatvGuard","searchable":1,"changeable":1},
 {"key":"csp_Nmys","name":"伯伯┃秒播","type":3,"api":"csp_WexNmysGuard","searchable":1,"changeable":1},
-{"key":"WexbttwoGuard","name":"大鼻涕┃秒播","type":3,"api":"csp_WexbttwoGuard","searchable":1,"changeable":1},
 {"key":"WexikanbotGuard","name":"爱看┃采集","type":3,"api":"csp_WexikanbotGuard","searchable":1,"changeable":1},
 {"key":"新6V","name":"新6V┃P2P","type":3,"api":"csp_WexXb6vGuard","searchable":1,"changeable":0},
 {"key":"瓜子","name":"瓜子┃不卡","type":3,"api":"csp_AppgzGuard","jar":"./fantaiying.jar","timeout":15,"playerType":"2","searchable":1,"quickSearch":1,"changeable":1},
