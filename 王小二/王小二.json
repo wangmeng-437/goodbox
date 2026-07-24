@@ -29,7 +29,7 @@
       "changeable": 0,
       "indexs": 0
     },
-	    {
+	{
       "key": "bili",
       "name": "🅱哔哔┃合集🅱",
       "type": 3,
@@ -45,7 +45,7 @@
         "json": "./bili001.txt"
       }
     },
-	    {
+	{
       "key": "WexNewBiLiLive",
       "name": "🅱️哔哩┃直播🅱️",
       "type": 3,
@@ -61,7 +61,7 @@
       "searchable": 1,
       "changeable": 1
     },
-		    {
+	{
       "key": "瓜子看球",
       "name": "🌐瓜子┃体育🌐",
       "type": 3,
@@ -379,69 +379,6 @@
       "api": "csp_WexIktvGuard",
       "searchable": 1,
       "changeable": 0
-    },
-      "key": "少儿教育",
-      "name": "📚少儿┃教育📚",
-      "type": 3,
-      "api": "csp_BiliGuard",
-      "style": {
-        "type": "rect",
-        "ratio": 1.597
-      },
-      "searchable": 0,
-      "quickSearch": 0,
-      "changeable": 0,
-      "ext": {
-        "json": "./少儿.txt"
-      }
-    },
-    {
-      "key": "小学课堂",
-      "name": "📚小学┃课堂📚",
-      "type": 3,
-      "api": "csp_BiliGuard",
-      "style": {
-        "type": "rect",
-        "ratio": 1.597
-      },
-      "searchable": 0,
-      "quickSearch": 0,
-      "changeable": 0,
-      "ext": {
-        "json": "./小学.txt"
-      }
-    },
-    {
-      "key": "初中课堂",
-      "name": "📚初中┃课堂📚",
-      "type": 3,
-      "api": "csp_BiliGuard",
-      "style": {
-        "type": "rect",
-        "ratio": 1.597
-      },
-      "searchable": 0,
-      "quickSearch": 0,
-      "changeable": 0,
-      "ext": {
-        "json": "./初中.txt"
-      }
-    },
-    {
-      "key": "高中教育",
-      "name": "📚高中┃课堂📚",
-      "type": 3,
-      "api": "csp_BiliGuard",
-      "style": {
-        "type": "rect",
-        "ratio": 1.597
-      },
-      "searchable": 0,
-      "quickSearch": 0,
-      "changeable": 0,
-      "ext": {
-        "json": "./高中.txt"
-      }
     },
     {
       "key": "WexLunhuiDJ",
