@@ -12,7 +12,6 @@
 {"key":"Douban","name":"🛩️小猛子剽窃二小🛩️","type":3,"api":"csp_DoubanGuard","searchable":0,"quickSearch":0,"filterable":0,"ext":"./fenlei.txt"},
 {"key":"csp_Nmys","name":"伯伯┃秒播","type":3,"api":"csp_WexNmysGuard","searchable":1,"changeable":1},
 {"key": "賤賤","name": "💥賤片┃p2p💥","type": 3,"api": "csp_WexJianpianGuard","searchable": 1,"changeable": 1},
-{"key": "Wexwencai","name": "🌺文才┃秒播🌺","type": 3,"api": "csp_WexwencaiGuard","searchable": 1,"changeable": 1},
 {"key":"Wexhanxiaoquan","name":"韩剧┃秒播","type":3,"api":"csp_WexhanxiaoquanGuard","searchable":1,"changeable":1},
 {"key":"WexikanbotGuard","name":"爱看┃采集","type":3,"api":"csp_WexikanbotGuard","searchable":1,"changeable":1},
 {"key":"新6V","name":"新6V┃P2P","type":3,"api":"csp_WexXb6vGuard","searchable":1,"changeable":0},
