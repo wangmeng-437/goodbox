@@ -4,7 +4,6 @@
 {"key":"csp_LocalFile","name":"本地视频","type":3,"api":"csp_LocalFile","searchable":0,"quickSearch":0,"filterable":0,"style":{"type":"rect","ratio":1.6}},
 {"key":"lf_js_search","name":"搜索","type":3,"searchable":0,"changeable":1,"quickSearch":0,"filterable":0,"api":"./lib/lf_search3_min.js","indexs":1,"ext":"18+"},
 {"key":"yayazy","name":"鸭鸭资源","type":1,"api":"https://cj.yayazy.net/api.php/provide/vod/?ac=list","searchable":1,"quickSearch":1,"categories":[],"style":{"type":"rect","ratio":1.8}},
-{"key":"奥斯卡","name":"奥斯卡","type":1,"api":"https://aosikazy.com/api.php/provide/vod/","header":{"User-Agent":"Mozilla/5.0","searchable":1,"quickSearch":1}},
 {"key":"精品资源","name":"精品资源","type":1,"api":"http://www.jingpinx.com/api.php/provide/vod/","searchable":1,"quickSearch":1,"categories":[],"style":{"type":"rect","ratio":1.6}},
 {"key":"xp天堂","name":"XP天堂","type":3,"filterable":0,"changeable":0,"api":"./js/xp天堂.js"},
 {"key":"J91","name":"91珍惜","type":3,"api":"csp_J91","jar":"./jar/custom_spider.jar","searchable":1,"filterable":1},
