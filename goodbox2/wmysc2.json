@@ -1,4 +1,4 @@
-{"spider":"./spider202503.jar",
+{"spider":"./spider202503.jar;md5;26C194D1AB9905869423F5CBCE42D980",
 
 "headers":[
 {"host":"aosikazy3.com","header":{"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.6261.95 Safari/537.36"}},
@@ -24,7 +24,7 @@
 {"key":"csp_XYQHiker_javffm","name":"JAVFFM(XYQHiker)","type":3,"api":"csp_XYQHiker","searchable":1,"quickSearch":0,"filterable":0,"ext":"./javffm.json","style":{"type":"rect","ratio":1.6}},
 {"key":"csp_XYQHiker_91porn","name":"91porn(XYQHiker)","type":3,"api":"csp_XYQHiker","searchable":1,"quickSearch":0,"filterable":0,"ext":"./91porn.json","style":{"type":"rect","ratio":1.6}},
 {"key":"csp_XYQHiker_鲨鱼av","name":"鲨鱼av(XYQHiker)","type":3,"api":"csp_XYQHiker","searchable":1,"quickSearch":0,"filterable":0,"ext":"./鲨鱼av.json","style":{"type":"rect","ratio":1.6}},
-{"key":"csp_xBPQ_搞aa","name":"GAOAA(XBPQ)","type":3,"api":"csp_xBPQ","searchable":1,"quickSearch":1,"filterable":0,"playerType":2,"jar":"./xbpq.jar","ext":"./gaoaaxxx.json"}
+{"key":"csp_xBPQ_搞aa","name":"GAOAA(XBPQ)","type":3,"api":"csp_xBPQ","searchable":1,"quickSearch":1,"filterable":0,"playerType":2,"jar":"./xbpq.jar;md5;D6A802D8DFE22F34635A6518CAF8BDE8","ext":"./gaoaaxxx.json"}
 ],
 
 "ijk":[

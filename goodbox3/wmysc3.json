@@ -1,4 +1,4 @@
-{"spider":"./spider.jar",
+{"spider":"./spider.jar;md5;81C8D28955626BA23E8209EE2F2051B2",
 "sites":[
 {"key":"潇洒_之王","name":"潇洒-合集","type":3,"api":"./drpy2.min.js","ext":"./采集之王.js?type=url&params=./采集集合.json","searchable":1,"quickSearch":1,"changeable":1,"filterable":1,"timeout":20},
 {"key":"采集","name":"zhangqun1818-合集","type":4,"api":"http://zhangqun1818.serv00.net/cj/cjjh.php","style":{"type":"rect","ratio":1.33},"ext":"0","changeable":1},
