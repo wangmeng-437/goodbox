@@ -25,6 +25,7 @@
 {"key":"xjzyw","name":"香蕉","type":1,"api":"https://www.xiangjiaozyw.com/api.php/provide/vod/?ac=list","searchable":1,"quickSearch":1},
 {"key":"hlxzy","name":"黑料X","type":1,"api":"https://www.heiliaozyapi.com/api.php/provide/vod/?ac=list","searchable":1,"quickSearch":1},
 {"key":"黄AV","name":"黄AV","type":0,"api":"https://www.pgxdy.com/api/xml.php"},
+{"key": "aidan","name": "艾旦黄黄","type": 1,"api": "https://lovedan.net/api.php/provide/vod/","searchable": 1,"quickSearch": 1,"filterable": 1},
 {"key":"XMVideo","name":"熊猫视频","type":3,"api":"csp_XMVideo","searchable":1,"filterable":1,"jar":"./jar/182.jar;md5;4B13C299ED9DFCA65BC775507A7D0118"},
 {"key":"KpgxdyE","name":"苹果小电影","type":0,"api":"https://www.pgxdy.com/api/xml.php","searchable":1,"quickSearch":1,"filterable":1},
 {"key":"ciliduo","name":"┃磁力多BT┃","api":"./js/ciliduo.js","timeout":30,"ext":{"box":"TVBox"},"playerType":0,"type":3},
