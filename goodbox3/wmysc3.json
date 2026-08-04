@@ -81,7 +81,8 @@
 {"key":"采集_量子","name":"🔞量子丨采集","type":1,"api":"https://cj.lziapi.com/api.php/provide/vod/","playUrl":"","searchable":1,"quickSearch":1,"changeable":1,"filterable":1,"categories":["伦理","伦理片","情色","情色片"]},
 {"key":"采集_如如","name":"🔞如如丨采集","type":1,"api":"https://cj.rycjapi.com/api.php/provide/vod/","playUrl":"https://ryplayer.com?url=","searchable":1,"quickSearch":1,"changeable":1,"filterable":1,"categories":["伦理","伦理片","情色","情色片"]},
 {"key":"采集_最大","name":"🔞最大丨采集","type":1,"api":"https://zuida.xyz/api.php/provide/vod/","playUrl":"https://jx.zuidplay.com/m3u8Player/?url=","searchable":1,"quickSearch":1,"changeable":1,"filterable":1,"categories":["伦理","伦理片","情色","情色片"]},
-{"key":"采集_天涯","name":"🔞天涯丨采集","type":1,"api":"https://tyyszyapi.com/api.php/provide/vod/","playUrl":"https://tyyszywjx.com/?url=","searchable":1,"quickSearch":1,"changeable":1,"filterable":1,"categories":["伦理","伦理片","情色","情色片"]}],
+{"key":"采集_天涯","name":"🔞天涯丨采集","type":1,"api":"https://tyyszyapi.com/api.php/provide/vod/","playUrl":"https://tyyszywjx.com/?url=","searchable":1,"quickSearch":1,"changeable":1,"filterable":1,"categories":["伦理","伦理片","情色","情色片"]}
+],
 
 "parses":[
 {"name":"虾米","type":0,"url":"https://jx.xmflv.com/?url=","ext":{"header":{"user-agent":"Mozilla/5.0(WindowsNT10.0;Win64;x64)AppleWebKit/537.36(KHTML,likeGecko)Chrome/110.0.0.0Safari/537.36Edg/110.0.1587.57"}}},
