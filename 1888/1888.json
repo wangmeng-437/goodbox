@@ -1,6 +1,9 @@
 {
 "spider":"https://d.kstore.dev/download/6430/1888/spider.jar;md5;B39FD9042FEC6A2BA36D7C5700787AEB",
 "sites":[
+{"key":"合集","name":"女星索引，点击搜索","type":4,"api":"./json/女星.json","searchable":0,"quickSearch":0,"filterable":0,"indexs":1},
+{"key":"合集2","name":"男星索引，点击搜索","type":4,"api":"./json/男星.json","searchable":0,"quickSearch":0,"filterable":0,"indexs":1},
+{"key":"合集3","name":"相声小品脱口秀演员","type":4,"api":"./json/相声小品脱口秀.json","searchable":0,"quickSearch":0,"filterable":0,"indexs":1},
 {"key":"配置中心","name":"配置中心","type":3,"api":"csp_Config","searchable":0,"changeable":0,"indexs":0,"style":{"type":"rect","ratio":1.597}},
 {"key":"豆瓣","name":"豆瓣","type":3,"api":"csp_Douban","searchable":0},
 {"key":"预告","name":"新片预告","type":3,"api":"csp_DouBan","searchable":0},
@@ -33,6 +36,10 @@
 {"key":"曼波动漫","name":"曼波动漫","type":3,"quickSearch":1,"api":"csp_AppGet","ext":{"url":"https://app.omofun1.top","dataKey":"66dc309cbeeca454","dataIv":"66dc309cbeeca454","deviceId":"","version":""}},
 {"key":"咕咕动漫","name":"咕咕动漫","type":3,"quickSearch":1,"api":"csp_AppGet","ext":{"url":"https://www.gugu3.com","dataKey":"nKfZ8KX6JTNWRzTD","dataIv":"nKfZ8KX6JTNWRzTD","deviceId":"","version":""}},
 {"key":"百度云盘","name":"百度云盘","type":3,"api":"csp_PanBaiDu","searchable":0,"filterable":0,"changeable":0,"style":{"type":"list","ratio":1.433}},
+
+{"key":"bili","name": "二小始🅱️哔哩合集","type": 3,"api": "csp_BiliGuard","jar":"./wex.jar;md5;1ae5f93acddd711b89098828735eedd6","searchable": 1,"quickSearch": 1,"filterable": 1,"style": {"type": "rect","ratio": 1.433},"ext": {"json": "https://support-chat.rongcloud.cn/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBYkE9IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--47a8ff0e68559a89a9a75b37d09a2b0854dc5a8a/bili001.txt"}},
+{"key":"Wexbiliys","name": "‍哔哩🅱️‍影视","type": 3,"api": "csp_WexbiliysGuard","jar":"./wex.jar;md5;1ae5f93acddd711b89098828735eedd6","searchable": 1,"changeable": 1},
+{"key":"biliych","name": "哔哩🅱️歌曲","type": 3,"api": "csp_BiliGuard","jar":"./wex.jar;md5;1ae5f93acddd711b89098828735eedd6","searchable": 0,"quickSearch": 1,"filterable": 1,"style": {"type": "rect","ratio": 1.433},"ext": {"json": "https://support-chat.rongcloud.cn/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBYkU9IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--3083f43a14e6b59f4bfe248478a3a8765b34bfdd/bilisong.txt"}},
 
 {"key": "采集之王","name": "采集合集js","type": 3,"api": "./js/drpy2.min.js","ext": "./js/采集之王.js?type=url&params=../json/%E9%87%87%E9%9B%86%E9%9D%99%E6%80%81.json$1$1"},
 {"key":"布雷影视","name":"布雷js","type":3,"api":"./drpy_libs/drpy2.min.js","searchable":1,"quickSearch":1,"filterable":1,"order_num":0,"ext":"./js/布雷.js"},
