@@ -93,7 +93,9 @@
 {"key":"蜻蜓FM","name":"蜻蜓FMjs","type":3,"api":"./js/drpy2.min.js","ext":"./js/蜻蜓FM.js"},
 {"key":"短合集","name":"短剧合集云盘js","type":3,"api":"./js/cloud.min.js","ext":"./js/短合集.js","style":{"type":"list"}},
 {"key":"短大全","name":"短剧大全夸克js","type":3,"api":"./js/cloud.min.js","ext":"./js/短大全.js","style":{"type":"list"}},
-{"key":"海马短","name":"河马短剧js","type":3,"api":"./js/drpy2.min.js","ext":"./js/河马短.js"},
+{"key":"海马短","name":"河马短剧js","type":3,"api":"./js/drpy2.min.js","ext":"./js/河马短剧.js"},
+{"key":"hmjc","name":"河马剧场py","type":3,"api":"./py/河马剧场.py"},
+{"key":"河马短","name":"河马短剧py","type":3,"api":"./json/河马短剧.py","searchable":1,"changeable":1,"quickSearch":1,"filterable":1,"playerType":2},
 
 {"key":"面包影视","name":"面包json","type":3,"api":"csp_XBPQ","ext":"./json/面包影视.json"},
 {"key":"永乐影视","name":"永乐json","type":3,"api":"csp_XBPQ","ext":"./json/永乐影视.json"},
@@ -148,7 +150,6 @@
 {"key":"悟圣短","name":"悟圣短剧.py","type":3,"api":"./py/悟圣短剧.py"},
 {"key":"喜福网","name":"喜福短剧.py","type":3,"api":"./py/喜福短剧.py"},
 {"key":"smdj","name":"星芽短剧.py","type":3,"api":"./py/星芽短剧.py"},
-{"key":"hmjc","name":"河马剧场.py","type":3,"api":"./py/河马剧场.py"},
 {"key":"djjh","name":"短剧聚合.py","type":3,"api":"./py/短剧聚合.py"},
 {"key":"blzb","name":"哔哩直播.py","type":3,"api":"./py/哔哩直播.py"},
 {"key":"袋鼠影视","name":"袋鼠影视.py","type":3,"api":"./py/袋鼠影视.py"},
@@ -160,7 +161,6 @@
 
 {"key":"文才","name":"文才py","type":3,"api":"./json/文才影视.py","searchable":1,"quickSearch":1,"filterable":1,"ext":{"site":"https://www.hkybqufgh.com,https://www.sizhengxt.com,https://0996zp.com,https://9zhoukj.com/,https://www.sizhengxt.com,https://www.tjrongze.com,https://www.jiabaide.cn,https://cqzuoer.com"}},
 {"key":"哔哩视频","name":"哔哩py","type":3,"api":"./json/哔哩视频.py","ext":{"json":"http://127.0.0.1:9978/file/TVBox/bili_cookie.txt"}},
-{"key":"河马短","name":"河马短剧py","type":3,"api":"./json/河马短.py","searchable":1,"changeable":1,"quickSearch":1,"filterable":1,"playerType":2},
 {"key":"猎手影视","name":"猎手py","type":3,"api":"./json/猎手影视.py","searchable":1,"changeable":1,"quickSearch":1,"filterable":1,"playerType":2},
 {"key":"爱瓜PY","name":"爱瓜py","type":3,"api":"./json/爱瓜影视.py","searchable":1,"changeable":1,"quickSearch":1,"filterable":1,"playerType":2},
 {"key":"AV4K影视","name":"AV4K-py","type":3,"api":"./json/AV4K影视.py","searchable":1,"changeable":1,"quickSearch":1,"filterable":1,"playerType":2},
