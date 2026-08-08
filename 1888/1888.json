@@ -3,6 +3,7 @@
 "sites":[
 {"key":"zygl","name":"资源管理py","type":3,"api":"./py/资源管理.py"},
 {"key": "直播","name": "酷喵🐱电视直播","type": 3,"api": "./py/%E7%9B%B4%E6%92%AD.py"},
+{"key": "直播转点播","name": "电视直播📺转点播","type": 3,"searchable": 0,"api": "./js/live2vod.js","ext": "./json/feimaolive.json"},
 {"key":"合集","name":"女星索引，点击搜索","type":4,"api":"./json/女星.json","searchable":0,"quickSearch":0,"filterable":0,"indexs":1},
 {"key":"合集2","name":"男星索引，点击搜索","type":4,"api":"./json/男星.json","searchable":0,"quickSearch":0,"filterable":0,"indexs":1},
 {"key":"合集3","name":"相声小品脱口秀演员","type":4,"api":"./json/相声小品脱口秀.json","searchable":0,"quickSearch":0,"filterable":0,"indexs":1},

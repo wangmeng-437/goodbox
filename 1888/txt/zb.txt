@@ -1,0 +1,298 @@
+央视,#genre#
+CCTV1HD,http://38.75.136.137:98/gslb/dsdqbv/cctv1hd.m3u8?auth=test20251009
+CCTV2HD,http://38.75.136.137:98/gslb/dsdqbv/cctv2hd.m3u8?auth=test20251009
+CCTV3HD,http://38.75.136.137:98/gslb/dsdqbv/cctv3hd.m3u8?auth=test20251009
+CCTV4HD,http://38.75.136.137:98/gslb/dsdqbv/cctv4hd.m3u8?auth=test20251009
+CCTV5HD,http://38.75.136.137:98/gslb/dsdqbv/cctv5hd.m3u8?auth=test20251009
+CCTV5+HD,http://38.75.136.137:98/gslb/dsdqbv/cctv5p.m3u8?auth=test20251009
+CCTV6HD,http://38.75.136.137:98/gslb/dsdqbv/cctv6hd.m3u8?auth=test20251009
+CCTV7HD,http://38.75.136.137:98/gslb/dsdqbv/cctv7hd.m3u8?auth=test20251009
+CCTV8HD,http://38.75.136.137:98/gslb/dsdqbv/cctv8hd.m3u8?auth=test20251009
+CCTV9HD,http://38.75.136.137:98/gslb/dsdqbv/cctv9hd.m3u8?auth=test20251009
+CCTV10HD,http://38.75.136.137:98/gslb/dsdqbv/cctv10hd.m3u8?auth=test20251009
+CCTV11HD,http://38.75.136.137:98/gslb/dsdqbv/cctv11hd.m3u8?auth=test20251009
+CCTV12HD,http://38.75.136.137:98/gslb/dsdqbv/cctv12hd.m3u8?auth=test20251009
+CCTV13HD,http://38.75.136.137:98/gslb/dsdqbv/cctv13hd.m3u8?auth=test20251009
+CCTV14HD,http://38.75.136.137:98/gslb/dsdqbv/cctv14hd.m3u8?auth=test20251009
+CCTV15HD,http://38.75.136.137:98/gslb/dsdqbv/cctv15hd.m3u8?auth=test20251009
+CCTV16HD,http://38.75.136.137:98/gslb/dsdqbv/cctv16hd.m3u8?auth=test20251009
+CCTV17HD,http://38.75.136.137:98/gslb/dsdqbv/cctv17hd.m3u8?auth=test20251009
+CCTV卫生健康,http://38.75.136.137:98/gslb/dsdqpub/wsjk.m3u8?auth=testpub
+CCTV央视台球,http://38.75.136.137:98/gslb/dsdqpub/ystq.m3u8?auth=testpub
+CCTV第一剧场,http://38.75.136.137:98/gslb/dsdqpub/dyjc.m3u8?auth=testpub
+CCTV风云剧场,http://38.75.136.137:98/gslb/dsdqpub/fyjc.m3u8?auth=testpub
+CCTV怀旧剧场,http://38.75.136.137:98/gslb/dsdqpub/hjjc.m3u8?auth=testpub
+CCTV风云足球,http://38.75.136.137:98/gslb/dsdqpub/fyzq.m3u8?auth=testpub
+CCTV风云音乐,http://38.75.136.137:98/gslb/dsdqpub/fyyy.m3u8?auth=testpub
+CCTV世界地理,http://38.75.136.137:98/gslb/dsdqpub/sjdl.m3u8?auth=testpub
+CCTV电视指南,http://38.75.136.137:98/gslb/dsdqpub/dszn.m3u8?auth=testpub
+CCTV兵器科技,http://38.75.136.137:98/gslb/dsdqpub/bqkj.m3u8?auth=testpub
+CCTB高尔夫网球,http://38.75.136.137:98/gslb/dsdqpub/gefwq.m3u8?auth=testpub
+CCTV央视文化精品,http://38.75.136.137:98/gslb/dsdqpub/ysjp.m3u8?auth=testpub
+CCTV女性时尚,http://38.75.136.137:98/gslb/dsdqpub/nxss.m3u8?auth=testpub
+
+卫视,#genre#
+广东珠江,http://38.75.136.137:98/gslb/dsdqbv/gdzj.m3u8?auth=test20251009
+广东新闻,http://38.75.136.137:98/gslb/dsdqpub/gdxw.m3u8?auth=testpub
+广东体育,http://38.75.136.137:98/gslb/dsdqpub/gdty.m3u8?auth=testpub
+邵氏电影,http://38.75.136.137:98/gslb/dsdqpub/lbssdy.m3u8?auth=testpub
+邵氏武侠,http://38.75.136.137:98/gslb/dsdqpub/lbsswx.m3u8?auth=testpub
+浙江卫视,http://38.75.136.137:98/gslb/dsdqpub/zjwshd.m3u8?auth=testpub
+北京卫视,http://38.75.136.137:98/gslb/dsdqpub/bjwshd.m3u8?auth=testpub
+东方卫视,http://38.75.136.137:98/gslb/dsdqbv/dfwshd.m3u8?auth=test20251009
+江苏卫视,http://38.75.136.137:98/gslb/dsdqbv/jswshd.m3u8?auth=test20251009
+山东卫视,http://38.75.136.137:98/gslb/dsdqpub/sdwshd.m3u8?auth=testpub
+四川卫视,http://38.75.136.137:98/gslb/dsdqpub/scwshd.m3u8?auth=testpub
+广东卫视,http://38.75.136.137:98/gslb/dsdqpub/gdwshd.m3u8?auth=testpub
+深圳卫视,http://38.75.136.137:98/gslb/dsdqpub/szwshd.m3u8?auth=testpub
+黑龙江卫视,http://38.75.136.137:98/gslb/dsdqpub/hljwshd.m3u8?auth=testpub
+吉林卫视,http://38.75.136.137:98/gslb/dsdqpub/jlwshd.m3u8?auth=testpub
+辽宁卫视,http://38.75.136.137:98/gslb/dsdqpub/lnwshd.m3u8?auth=testpub
+天津卫视,http://38.75.136.137:98/gslb/dsdqpub/tjwshd.m3u8?auth=testpub
+湖北卫视,http://38.75.136.137:98/gslb/dsdqpub/hbwshd.m3u8?auth=testpub
+江西卫视,http://38.75.136.137:98/gslb/dsdqpub/jxwshd.m3u8?auth=testpub
+陕西卫视,http://38.75.136.137:98/gslb/dsdqpub/sxwshd.m3u8?auth=testpub
+贵州卫视,http://38.75.136.137:98/gslb/dsdqpub/gzwshd.m3u8?auth=testpub
+云南卫视,http://38.75.136.137:98/gslb/dsdqpub/ynwshd.m3u8?auth=testpub
+贵州卫视,http://38.75.136.137:98/gslb/dsdqpub/gzwshd.m3u8?auth=testpub
+广西卫视,http://38.75.136.137:98/gslb/dsdqpub/gxwshd.m3u8?auth=testpub
+东南卫视,http://38.75.136.137:98/gslb/dsdqpub/dnwshd.m3u8?auth=testpub
+中国气象,http://38.75.136.137:98/gslb/dsdqpub/zgqx.m3u8?auth=testpub
+
+央卫稳定,#genre#
+C1,http://222.85.198.92:8000/hls/1/index.m3u8
+C2,http://222.85.198.92:8000/hls/2/index.m3u8
+C3,http://222.85.198.92:8000/hls/3/index.m3u8
+C4,http://222.85.198.92:8000/hls/4/index.m3u8
+C5,http://222.85.198.92:8000/hls/5/index.m3u8
+C5+,https://php.jdshipin.com:2096/TVOD/iptv.php?id=cctv5p
+C6,http://222.85.198.92:8000/hls/6/index.m3u8
+C7,http://222.85.198.92:8000/hls/7/index.m3u8
+C8,http://222.85.198.92:8000/hls/8/index.m3u8
+C9,http://222.89.29.232:808/hls/9/index.m3u8
+C10,http://222.85.198.92:8000/hls/9/index.m3u8
+C11,http://222.85.198.92:8000/hls/10/index.m3u8
+C12,http://222.85.198.92:8000/hls/11/index.m3u8
+C13,http://222.85.198.92:8000/hls/12/index.m3u8
+C14,http://222.85.198.92:8000/hls/13/index.m3u8
+C15,http://222.85.198.92:8000/hls/14/index.m3u8
+C16,https://php.jdshipin.com:2096/TVOD/iptv.php?id=cctv16
+C17,http://222.85.198.92:8000/hls/15/index.m3u8
+北京,http://222.85.198.92:8000/hls/29/index.m3u8
+湖南,http://222.85.198.92:8000/hls/17/index.m3u8
+四川,http://222.85.198.92:8000/hls/46/index.m3u8
+河南,http://222.85.198.92:8000/hls/27/index.m3u8
+安徽,http://222.85.198.92:8000/hls/20/index.m3u8
+贵州,http://222.85.198.92:8000/hls/16/index.m3u8
+江苏,http://222.85.198.92:8000/hls/19/index.m3u8
+浙江,http://222.85.198.92:8000/hls/18/index.m3u8
+山东,http://222.85.198.92:8000/hls/43/index.m3u8
+云南,http://222.85.198.92:8000/hls/35/index.m3u8
+江西,http://222.85.198.92:8000/hls/44/index.m3u8
+龙江,http://222.85.198.92:8000/hls/45/index.m3u8
+C1,https://php.jdshipin.com:2096/TVOD/iptv.php?id=cctv1
+C2,https://php.jdshipin.com:2096/TVOD/iptv.php?id=cctv2
+C3,https://php.jdshipin.com:2096/TVOD/iptv.php?id=cctv3
+C4,https://php.jdshipin.com:2096/TVOD/iptv.php?id=cctv4
+C5,https://php.jdshipin.com:2096/TVOD/iptv.php?id=cctv5
+C6,https://php.jdshipin.com:2096/TVOD/iptv.php?id=cctv6
+C7,https://php.jdshipin.com:2096/TVOD/iptv.php?id=cctv7
+C8,https://php.jdshipin.com:2096/TVOD/iptv.php?id=cctv8
+C9,https://php.jdshipin.com:2096/TVOD/iptv.php?id=cctv9
+C10,https://php.jdshipin.com:2096/TVOD/iptv.php?id=cctv10
+C11,https://php.jdshipin.com:2096/TVOD/iptv.php?id=cctv11
+C12,https://php.jdshipin.com:2096/TVOD/iptv.php?id=cctv12
+C13,https://php.jdshipin.com:2096/TVOD/iptv.php?id=cctv13
+C14,https://php.jdshipin.com:2096/TVOD/iptv.php?id=cctv14
+C15,https://php.jdshipin.com:2096/TVOD/iptv.php?id=cctv15
+C17,https://php.jdshipin.com:2096/TVOD/iptv.php?id=cctv17
+
+超清央卫,#genre#
+CCTV1-综合HD,http://vip1.xinketongxun.fun:8082/tsfile/live/0001_1.m3u8?key=txiptv&playlive=1&authid=0
+CCTV2-财经HD,http://vip1.xinketongxun.fun:8082/tsfile/live/0002_1.m3u8?key=txiptv&playlive=1&authid=0
+CCTV3-综艺HD,http://vip1.xinketongxun.fun:8082/tsfile/live/0003_1.m3u8?key=txiptv&playlive=1&authid=0
+CCTV4-国际HD,http://vip1.xinketongxun.fun:8082/tsfile/live/0004_1.m3u8?key=txiptv&playlive=1&authid=0
+CCTV5-体育HD,http://vip1.xinketongxun.fun:8082/tsfile/live/0005_1.m3u8?key=txiptv&playlive=1&authid=0
+CCTV6-电影HD,http://vip1.xinketongxun.fun:8082/tsfile/live/0006_1.m3u8?key=txiptv&playlive=1&authid=0
+CCTV7-军农HD,http://vip1.xinketongxun.fun:8082/tsfile/live/0007_1.m3u8?key=txiptv&playlive=1&authid=0
+CCTV8-电视剧HD,http://vip1.xinketongxun.fun:8082/tsfile/live/0008_1.m3u8?key=txiptv&playlive=1&authid=0
+CCTV9-纪录HD,http://vip1.xinketongxun.fun:8082/tsfile/live/0009_1.m3u8?key=txiptv&playlive=1&authid=0
+CCTV10-科教HD,http://vip1.xinketongxun.fun:8082/tsfile/live/0010_1.m3u8?key=txiptv&playlive=1&authid=0
+CCTV11-戏曲HD,http://vip1.xinketongxun.fun:8082/tsfile/live/0011_1.m3u8?key=txiptv&playlive=1&authid=0
+CCTV12-社会与法HD,http://vip1.xinketongxun.fun:8082/tsfile/live/0012_1.m3u8?key=txiptv&playlive=1&authid=0
+CCTV13-新闻HD,http://vip1.xinketongxun.fun:8082/tsfile/live/0013_1.m3u8?key=txiptv&playlive=1&authid=0
+CCTV14-少儿HD,http://vip1.xinketongxun.fun:8082/tsfile/live/0014_1.m3u8?key=txiptv&playlive=1&authid=0
+CCTV15-音乐HD,http://vip1.xinketongxun.fun:8082/tsfile/live/0015_1.m3u8?key=txiptv&playlive=1&authid=0
+CCTV16-奥林匹克HD,http://vip1.xinketongxun.fun:8082/tsfile/live/1002_1.m3u8?key=txiptv&playlive=1&authid=0
+CCTV17-农业农村HD,http://vip1.xinketongxun.fun:8082/tsfile/live/1039_1.m3u8?key=txiptv&playlive=1&authid=0
+
+
+北方广电,#genre#
+CCTV-1HD,http://120.76.248.139/live/bfgd/4200000488.m3u8
+CCTV-2HD,http://120.76.248.139/live/bfgd/4200000061.m3u8
+CCTV-3HD,http://120.76.248.139/live/bfgd/4200000062.m3u8
+CCTV-4HD,http://120.76.248.139/live/bfgd/4200000063.m3u8
+CCTV-5HD,http://120.76.248.139/live/bfgd/4200000064.m3u8
+CCTV-5+HD,http://120.76.248.139/live/bfgd/4200000246.m3u8
+CCTV-6HD,http://120.76.248.139/live/bfgd/4200000065.m3u8
+CCTV-7HD,http://120.76.248.139/live/bfgd/4200000127.m3u8
+CCTV-8HD,http://120.76.248.139/live/bfgd/4200000066.m3u8
+CCTV-9HD,http://120.76.248.139/live/bfgd/4200000128.m3u8
+CCTV-10HD,http://120.76.248.139/live/bfgd/4200000129.m3u8
+CCTV-11HD,http://120.76.248.139/live/bfgd/4200000130.m3u8
+CCTV-12HD,http://120.76.248.139/live/bfgd/4200000131.m3u8
+CCTV-13HD,http://120.76.248.139/live/bfgd/4200000067.m3u8
+CCTV-14HD,http://120.76.248.139/live/bfgd/4200000132.m3u8
+CCTV-15HD,http://120.76.248.139/live/bfgd/4200000133.m3u8
+CCTV-17HD,http://120.76.248.139/live/bfgd/4200000204.m3u8
+
+
+广东短址,#genre#
+翡翠台,http://r.jdshipin.com/qClQf
+翡翠台,http://r.jdshipin.com/qrfbg
+翡翠台,http://r.jdshipin.com/62WM7
+翡翠台,http://r.jdshipin.com/n90gt
+翡翠台,http://r.jdshipin.com/GeWKr
+明珠台,http://r.jdshipin.com/ZQ4kN
+TVB Plus,http://r.jdshipin.com/Nr5jq
+TVB Plus,http://r.jdshipin.com/ndGgS
+无线新闻,http://r.jdshipin.com/CkuBd
+TVB星河,http://r.jdshipin.com/sXuuD
+TVB星河,http://r.jdshipin.com/Voac4
+华丽翡翠台,http://r.jdshipin.com/thuYX
+ViuTV,http://r.jdshipin.com/vSJvl
+凤凰中文,http://r.jdshipin.com/cCCzW
+凤凰资讯,http://r.jdshipin.com/0Rp07
+凤凰香港,http://r.jdshipin.com/yDoTN
+凤凰香港,http://r.jdshipin.com/NfC0f
+澳视澳门,http://r.jdshipin.com/n2YZI
+广东珠江,http://r.jdshipin.com/sE5vO
+广东体育,http://r.jdshipin.com/LiYdg
+广州综合,http://r.jdshipin.com/iR6Gq
+广州影视,http://r.jdshipin.com/TcKr2
+广州南国都市,http://r.jdshipin.com/nWaZO
+广州综合,http://r.jdshipin.com/snhya
+广州影视,http://r.jdshipin.com/sFw4S
+海峡卫视,http://r.jdshipin.com/WtYt3
+
+🏀超清央卫,#genre#
+CCTV1HD,http://38.75.136.137:98/gslb/dsdqbv/cctv1hd.m3u8?auth=test20251009
+CCTV2HD,http://38.75.136.137:98/gslb/dsdqbv/cctv2hd.m3u8?auth=test20251009
+CCTV3HD,http://38.75.136.137:98/gslb/dsdqbv/cctv3hd.m3u8?auth=test20251009
+CCTV4HD,http://38.75.136.137:98/gslb/dsdqbv/cctv4hd.m3u8?auth=test20251009
+CCTV5HD,http://38.75.136.137:98/gslb/dsdqbv/cctv5hd.m3u8?auth=test20251009
+CCTV5+HD,http://38.75.136.137:98/gslb/dsdqbv/cctv5p.m3u8?auth=test20251009
+CCTV6HD,http://38.75.136.137:98/gslb/dsdqbv/cctv6hd.m3u8?auth=test20251009
+CCTV7HD,http://38.75.136.137:98/gslb/dsdqbv/cctv7hd.m3u8?auth=test20251009
+CCTV8HD,http://38.75.136.137:98/gslb/dsdqbv/cctv8hd.m3u8?auth=test20251009
+CCTV9HD,http://38.75.136.137:98/gslb/dsdqbv/cctv9hd.m3u8?auth=test20251009
+CCTV10HD,http://38.75.136.137:98/gslb/dsdqbv/cctv10hd.m3u8?auth=test20251009
+CCTV11HD,http://38.75.136.137:98/gslb/dsdqbv/cctv11hd.m3u8?auth=test20251009
+CCTV12HD,http://38.75.136.137:98/gslb/dsdqbv/cctv12hd.m3u8?auth=test20251009
+CCTV13HD,http://38.75.136.137:98/gslb/dsdqbv/cctv13hd.m3u8?auth=test20251009
+CCTV14HD,http://38.75.136.137:98/gslb/dsdqbv/cctv14hd.m3u8?auth=test20251009
+CCTV15HD,http://38.75.136.137:98/gslb/dsdqbv/cctv15hd.m3u8?auth=test20251009
+CCTV16HD,http://38.75.136.137:98/gslb/dsdqbv/cctv16hd.m3u8?auth=test20251009
+CCTV17HD,http://38.75.136.137:98/gslb/dsdqbv/cctv17hd.m3u8?auth=test20251009
+CCTV卫生健康,http://38.75.136.137:98/gslb/dsdqpub/wsjk.m3u8?auth=testpub
+CCTV央视台球,http://38.75.136.137:98/gslb/dsdqpub/ystq.m3u8?auth=testpub
+CCTV第一剧场,http://38.75.136.137:98/gslb/dsdqpub/dyjc.m3u8?auth=testpub
+CCTV风云剧场,http://38.75.136.137:98/gslb/dsdqpub/fyjc.m3u8?auth=testpub
+CCTV怀旧剧场,http://38.75.136.137:98/gslb/dsdqpub/hjjc.m3u8?auth=testpub
+CCTV风云足球,http://38.75.136.137:98/gslb/dsdqpub/fyzq.m3u8?auth=testpub
+CCTV风云音乐,http://38.75.136.137:98/gslb/dsdqpub/fyyy.m3u8?auth=testpub
+CCTV世界地理,http://38.75.136.137:98/gslb/dsdqpub/sjdl.m3u8?auth=testpub
+CCTV电视指南,http://38.75.136.137:98/gslb/dsdqpub/dszn.m3u8?auth=testpub
+CCTV兵器科技,http://38.75.136.137:98/gslb/dsdqpub/bqkj.m3u8?auth=testpub
+CCTB高尔夫网球,http://38.75.136.137:98/gslb/dsdqpub/gefwq.m3u8?auth=testpub
+CCTV央视文化精品,http://38.75.136.137:98/gslb/dsdqpub/ysjp.m3u8?auth=testpub
+CCTV女性时尚,http://38.75.136.137:98/gslb/dsdqpub/nxss.m3u8?auth=testpub
+广东珠江,http://38.75.136.137:98/gslb/dsdqbv/gdzj.m3u8?auth=test20251009
+广东新闻,http://38.75.136.137:98/gslb/dsdqpub/gdxw.m3u8?auth=testpub
+广东体育,http://38.75.136.137:98/gslb/dsdqpub/gdty.m3u8?auth=testpub
+邵氏电影,http://38.75.136.137:98/gslb/dsdqpub/lbssdy.m3u8?auth=testpub
+邵氏武侠,http://38.75.136.137:98/gslb/dsdqpub/lbsswx.m3u8?auth=testpub
+浙江卫视,http://38.75.136.137:98/gslb/dsdqpub/zjwshd.m3u8?auth=testpub
+北京卫视,http://38.75.136.137:98/gslb/dsdqpub/bjwshd.m3u8?auth=testpub
+东方卫视,http://38.75.136.137:98/gslb/dsdqbv/dfwshd.m3u8?auth=test20251009
+江苏卫视,http://38.75.136.137:98/gslb/dsdqbv/jswshd.m3u8?auth=test20251009
+山东卫视,http://38.75.136.137:98/gslb/dsdqpub/sdwshd.m3u8?auth=testpub
+四川卫视,http://38.75.136.137:98/gslb/dsdqpub/scwshd.m3u8?auth=testpub
+广东卫视,http://38.75.136.137:98/gslb/dsdqpub/gdwshd.m3u8?auth=testpub
+深圳卫视,http://38.75.136.137:98/gslb/dsdqpub/szwshd.m3u8?auth=testpub
+黑龙江卫视,http://38.75.136.137:98/gslb/dsdqpub/hljwshd.m3u8?auth=testpub
+吉林卫视,http://38.75.136.137:98/gslb/dsdqpub/jlwshd.m3u8?auth=testpub
+辽宁卫视,http://38.75.136.137:98/gslb/dsdqpub/lnwshd.m3u8?auth=testpub
+天津卫视,http://38.75.136.137:98/gslb/dsdqpub/tjwshd.m3u8?auth=testpub
+湖北卫视,http://38.75.136.137:98/gslb/dsdqpub/hbwshd.m3u8?auth=testpub
+江西卫视,http://38.75.136.137:98/gslb/dsdqpub/jxwshd.m3u8?auth=testpub
+陕西卫视,http://38.75.136.137:98/gslb/dsdqpub/sxwshd.m3u8?auth=testpub
+贵州卫视,http://38.75.136.137:98/gslb/dsdqpub/gzwshd.m3u8?auth=testpub
+云南卫视,http://38.75.136.137:98/gslb/dsdqpub/ynwshd.m3u8?auth=testpub
+贵州卫视,http://38.75.136.137:98/gslb/dsdqpub/gzwshd.m3u8?auth=testpub
+广西卫视,http://38.75.136.137:98/gslb/dsdqpub/gxwshd.m3u8?auth=testpub
+东南卫视,http://38.75.136.137:98/gslb/dsdqpub/dnwshd.m3u8?auth=testpub
+中国气象,http://38.75.136.137:98/gslb/dsdqpub/zgqx.m3u8?auth=testpub
+
+
+🎯咪咕央卫,#genre#
+CCTV-01咪咕, http://rihou.cc:555/tv/[mg]CCTV-01
+CCTV-02咪咕, http://rihou.cc:555/tv/[mg]CCTV-02
+CCTV-03咪咕, http://rihou.cc:555/tv/[mg]CCTV-03
+CCTV-04咪咕, http://rihou.cc:555/tv/[mg]CCTV-04
+CCTV-05咪咕, http://rihou.cc:555/tv/[mg]CCTV-05
+CCTV-5+咪咕, http://rihou.cc:555/tv/[mg]CCTV-5p
+CCTV-06咪咕, http://rihou.cc:555/tv/[mg]CCTV-06
+CCTV-07咪咕, http://rihou.cc:555/tv/[mg]CCTV-07
+CCTV-08咪咕, http://rihou.cc:555/tv/[mg]CCTV-08
+CCTV-09咪咕, http://rihou.cc:555/tv/[mg]CCTV-09
+CCTV-10咪咕, http://rihou.cc:555/tv/[mg]CCTV-10
+CCTV-11咪咕, http://rihou.cc:555/tv/[mg]CCTV-11
+CCTV-12咪咕, http://rihou.cc:555/tv/[mg]CCTV-12
+CCTV-13咪咕, http://rihou.cc:555/tv/[mg]CCTV-13
+CCTV-14咪咕, http://rihou.cc:555/tv/[mg]CCTV-14
+CCTV-15咪咕, http://rihou.cc:555/tv/[mg]CCTV-15
+CCTV-16咪咕, http://rihou.cc:555/tv/[mg]CCTV-16
+CCTV-17咪咕, http://rihou.cc:555/tv/[mg]CCTV-17
+cct4欧洲咪咕, http://rihou.cc:555/tv/[mg]cct4%E6%AC%A7%E6%B4%B2
+cct4美洲咪咕, http://rihou.cc:555/tv/[mg]cct4%E7%BE%8E%E6%B4%B2
+CGTN-西咪咕, http://rihou.cc:555/tv/[mg]CGTN-%E8%A5%BF
+CGTN-阿咪咕, http://rihou.cc:555/tv/[mg]CGTN-%E9%98%BF
+CGTN-法咪咕, http://rihou.cc:555/tv/[mg]CGTN-%E6%B3%95
+北京卫视咪咕, http://rihou.cc:555/tv/[mg]%E5%8C%97%E4%BA%AC%E5%8D%AB%E8%A7%86
+东方卫视咪咕, http://rihou.cc:555/tv/[mg]%E4%B8%9C%E6%96%B9%E5%8D%AB%E8%A7%86
+浙江卫视咪咕, http://rihou.cc:555/tv/[mg]%E6%B5%99%E6%B1%9F%E5%8D%AB%E8%A7%86
+江苏卫视咪咕, http://rihou.cc:555/tv/[mg]%E6%B1%9F%E8%8B%8F%E5%8D%AB%E8%A7%86
+湖南卫视咪咕, http://rihou.cc:555/tv/[mg]%E6%B9%96%E5%8D%97%E5%8D%AB%E8%A7%86
+广东卫视咪咕, http://rihou.cc:555/tv/[mg]%E5%B9%BF%E4%B8%9C%E5%8D%AB%E8%A7%86
+深圳卫视咪咕, http://rihou.cc:555/tv/[mg]%E6%B7%B1%E5%9C%B3%E5%8D%AB%E8%A7%86
+山东卫视咪咕, http://rihou.cc:555/tv/[mg]%E5%B1%B1%E4%B8%9C%E5%8D%AB%E8%A7%86
+河南卫视咪咕, http://rihou.cc:555/tv/[mg]%E6%B2%B3%E5%8D%97%E5%8D%AB%E8%A7%86
+江西卫视咪咕, http://rihou.cc:555/tv/[mg]%E6%B1%9F%E8%A5%BF%E5%8D%AB%E8%A7%86
+湖北卫视咪咕, http://rihou.cc:555/tv/[mg]%E6%B9%96%E5%8C%97%E5%8D%AB%E8%A7%86
+海南卫视咪咕, http://rihou.cc:555/tv/[mg]%E6%B5%B7%E5%8D%97%E5%8D%AB%E8%A7%86
+陕西卫视咪咕, http://rihou.cc:555/tv/[mg]%E9%99%95%E8%A5%BF%E5%8D%AB%E8%A7%86
+兵团卫视咪咕, http://rihou.cc:555/tv/[mg]%E5%85%B5%E5%9B%A2%E5%8D%AB%E8%A7%86
+黑龙江视咪咕, http://rihou.cc:555/tv/[mg]%E9%BB%91%E9%BE%99%E6%B1%9F%E8%A7%86
+
+
+
+📡央视备用,#genre#
+CCTV-1综合,http://hook.msen.site:8000/rtp/235.254.198.51:1480
+CCTV-2财经,http://hook.msen.site:8000/rtp/235.254.198.52:1484
+CCTV-3综艺,http://hook.msen.site:8000/rtp/235.254.198.53:1488
+CCTV-4中文国际,http://hook.msen.site:8000/rtp/235.254.198.183:7980
+CCTV-5体育,http://hook.msen.site:8000/rtp/235.254.198.54:1492
+CCTV-5+体育赛事,http://hook.msen.site:8000/rtp/235.254.198.122:1764
+CCTV-6电影,http://hook.msen.site:8000/rtp/235.254.198.55:1496
+CCTV-7国防军事,http://hook.msen.site:8000/rtp/235.254.198.56:1500
+CCTV-8电视剧,http://hook.msen.site:8000/rtp/235.254.198.57:1504
+CCTV-9纪录,http://hook.msen.site:8000/rtp/235.254.198.58:1508
+CCTV-10科教,http://hook.msen.site:8000/rtp/235.254.198.59:1512
+CCTV-11戏曲,http://hook.msen.site:8000/rtp/235.254.198.7:1304
+CCTV-12社会与法,http://hook.msen.site:8000/rtp/235.254.198.60:1516
+CCTV-13新闻,http://hook.msen.site:8000/rtp/235.254.198.9:1312
+CCTV-14少儿,http://hook.msen.site:8000/rtp/235.254.198.61:1520
+CCTV-15音乐,http://hook.msen.site:8000/rtp/235.254.198.11:1320
+CCTV-16奥林匹克,http://116.5.123.234:9088/rtp/233.18.204.215:5140
+CCTV-17农业农村,http://hook.msen.site:8000/rtp/235.254.198.130:7980
