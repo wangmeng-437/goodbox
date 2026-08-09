@@ -1,7 +1,11 @@
-# 资源管理.py - 智能多策略封面提取版（含在线直播、在线电台、短视频、画廊功能、删除模式、网页浏览器、PDF/EPUB漫画阅读）
+# 资源测试.py - 智能多策略封面提取版（含在线直播、在线电台、短视频、画廊功能、删除模式、网页浏览器）
 # 说明：MP3/FLAC/M4A/AAC/OGG/WAV 多策略提取内置封面，优先使用本地同名图片
-# 新增：PDF/EPUB漫画阅读支持，统一缓存目录，支持任意文件夹读取
-# 新增：动作/工具/书签功能（移植自4webview.py）- 网格排版，支持添加/删除/修改书签
+# 修复：外网网站直接返回原始 URL，不经过 data URL 包装，解决外网打不开的问题
+# 新增：连点3次删除当前歌曲，删除后自动停止播放
+# 修复：每个直播源可独立配置 UA，播放时自动生效
+# 修复：删除模式支持删除文件夹
+# 修复：删除模式开启/关闭时使用缓存，不重新扫描，防止页面刷新到顶部
+# 修复：缓存图片目录添加 .nomedia 文件，防止相册扫描
 
 import sys
 import re
@@ -26,71 +30,40 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-# ==================== PDF/EPUB漫画支持（需要Java类） ====================
-try:
-    from java import jclass
-    HAS_JAVA = True
-except ImportError:
-    HAS_JAVA = False
-    print("⚠️ Java类不可用，PDF/EPUB功能将受限")
-
 # ==================== 电视直播封面图片 ====================
 TV_COVER = "https://p2.ssl.qhimgs1.com/bdr/460__/t045d2cbb68401612b2.png"
 
-# ==================== 缓存路径配置 ====================
-COVER_CACHE_DIR = '/storage/emulated/0/tmp/covers/'
-LYRICS_CACHE_DIR = '/storage/emulated/0/tmp/lyrics/'
-RADIO_COVER_CACHE_DIR = '/storage/emulated/0/tmp/radio_covers/'
-COMIC_CACHE_DIR = '/storage/emulated/0/tmp/comic_covers/'
-COMIC_PREVIEW_DIR = '/storage/emulated/0/tmp/comic_previews/'
-RADIO_SCAN_RECORD_FILE = '/storage/emulated/0/tmp/radio_scan_record.json'
-COVER_SCAN_RECORD_FILE = '/storage/emulated/0/tmp/cover_scan_record.json'
-
-LIVE_PROGRAM_CACHE_DURATION = 300
-
-DB_COMPAT_MODE = True
-MAX_DB_RESULTS = 50000
-
-ROOT_PATHS = [
-    '/storage/emulated/0/',
-    '/storage/emulated/0/Movies/',
-    '/storage/emulated/0/Music/',
-    '/storage/emulated/0/Download/KuwoMusic/music/',
-    '/storage/emulated/0/Download/',
-    '/storage/emulated/0/DCIM/Camera/',
-    '/storage/emulated/0/Pictures/',
-    '/storage/emulated/0/Books/',
-    '/storage/emulated/0/VodPlus/wwwroot/lz/',
-    '/storage/emulated/0/tmp/'
+# ==================== 常用网址导航配置 ====================
+WEBVIEW_WEBSITES = [
+    {"name": "🔍 输入网址", "url": "action:input"},
+    {"name": "🔓 解密工具", "url": "https://xn--ihqu10cn4c.xn--v4q818bf34b.com/helper/"},
+    {"name": "🎵 网易云音乐", "url": "https://music.163.com/"},
+    {"name": "🎮 小游戏", "url": "https://www.yikm.net/nes?tag=9"},
+    {"name": "📺 WhosTV", "url": "https://whos.tv/actresses"},
+    {"name": "🎬 B站", "url": "https://www.bilibili.com/"},
+    {"name": "🖼️ 壁纸", "url": "https://wallhaven.cc/"},
+    {"name": "📰 热榜", "url": "https://tophub.today/"},
+    {"name": "🐱 猫咪", "url": "http://127.0.0.1:8901/html/index.html"},
+    {"name": "🌍 发现网站", "url": "http://127.0.0.1:8901/PDF/pdf.php"},
+    {"name": "📚 知乎", "url": "https://www.zhihu.com/"},
+    {"name": "🎬 豆瓣电影", "url": "https://movie.douban.com/"},
+    {"name": "🛒 淘宝", "url": "https://www.taobao.com/"},
+    {"name": "📦 京东", "url": "https://www.jd.com/"},
+    {"name": "🔧 GitHub", "url": "https://github.com/"},
+    {"name": "📺 YouTube", "url": "https://m.youtube.com/"},
+    {"name": "🐦 Twitter", "url": "https://twitter.com/"},
+    {"name": "📘 Facebook", "url": "https://m.facebook.com/"},
+    {"name": "📸 Instagram", "url": "https://www.instagram.com/"},
+    {"name": "🎵 TikTok", "url": "https://www.tiktok.com/"},
+    {"name": "🔴 Reddit", "url": "https://www.reddit.com/"},
 ]
 
-PATH_TO_CHINESE = {
-    '/storage/emulated/0/': '根目录',
-    '/storage/emulated/0/Movies/': '电影',
-    '/storage/emulated/0/Music/': '音乐',
-    '/storage/emulated/0/Download/KuwoMusic/music/': '酷我音乐',
-    '/storage/emulated/0/Download/': '下载',
-    '/storage/emulated/0/DCIM/Camera/': '相机',
-    '/storage/emulated/0/Pictures/': '图片',
-    '/storage/emulated/0/Books/': '小说',
-    '/storage/emulated/0/VodPlus/wwwroot/lz/': '老张',
-    '/storage/emulated/0/tmp/': '缓存文件夹'
-}
-
-print("ℹ️ 本地资源管理加载成功 - 智能多策略封面提取版")
-print("✅ 在线直播UA已修复 - 每个直播源可独立配置UA，播放时自动生效")
-print("✅ 连点删除功能已启用 - 播放界面连续点击同一首歌3次可删除")
-print("✅ 删除模式支持删除文件夹")
-print("✅ 缓存图片目录已添加 .nomedia 文件，防止相册扫描")
-print("✅ PDF/EPUB漫画阅读已集成 - 支持任意文件夹读取")
-print("✅ 动作/工具/书签功能已集成 - 网格排版")
-
-
+# ==================== 在线直播配置（每个直播源可独立配置 UA） ====================
 ONLINE_LIVE_SOURCES = [
     {
         "id": "migu_live",
         "name": "📺 咪咕直播",
-        "url": "https://gh-proxy.org/https://raw.githubusercontent.com/develop202/migu_video/refs/heads/main/interface.txt",
+        "url": "https://d.kstore.dev/download/6430/1888/txt/zhibo",
         "cover": TV_COVER,
         "remarks": "央视/卫视直播",
         "type": "m3u",
@@ -99,17 +72,44 @@ ONLINE_LIVE_SOURCES = [
         "referer": "https://www.miguvideo.com/"
     },
     {
-        "id": "gongdian_live",
-        "name": "🏛️ 宫殿直播",
-        "url": "https://gongdian.top/tv/iptv",
+        "id": "kulao_tv",
+        "name": "小猛子",
+        "url": "https://d.kstore.dev/download/6430/1888/txt/live.m3u",
         "cover": TV_COVER,
-        "remarks": "宫殿直播源",
+        "remarks": "王采薇是个坏蛋玩意儿",
+        "type": "m3u",
+        "playerType": 2,
+        "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    },
+    {
+        "id": "Kimentanm",
+        "name": "王采薇大臭宝",
+        "url": "https://d.kstore.dev/download/6430/1888/txt/iptv.m3u",
+        "cover": TV_COVER,
+        "remarks": "每天都要打PP",
+        "type": "m3u",
+        "ua": "AptvPlayer-UA"
+    },
+    {
+        "id": "游魂",
+        "name": "💎 游魂",
+        "url": "https://www.iyouhun.com/tv/zb",
+        "cover": TV_COVER,
+        "remarks": "简单直播源",
+        "type": "txt",
+        "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    },
+        {
+        "id": "gongdian_live",
+        "name": "被我破解-宫殿直播",
+        "url": "https://d.kstore.dev/download/6430/1888/txt/gongdian",
+        "cover": TV_COVER,
+        "remarks": "用1DM+下载，或OK影视Pro手机版",
         "type": "m3u",
         "playerType": 2,
         "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-        "referer": "https://gongdian.top/"
     },
-     {
+  {
         "id": "yiyifafa._live",
         "name": "✨ 易发直播",
         "url": "https://gh-proxy.org/raw.githubusercontent.com/fafa002/yf2025/refs/heads/main/yiyifafa.txt",
@@ -118,28 +118,10 @@ ONLINE_LIVE_SOURCES = [
         "type": "txt",
         "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
     },
-    {
+{
         "id": "simple_live",
         "name": "✨ 简单直播",
         "url": "http://gh-proxy.org/raw.githubusercontent.com/Supprise0901/TVBox_live/main/live.txt",
-        "cover": TV_COVER,
-        "remarks": "简单直播源",
-        "type": "txt",
-        "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-    },
-    {
-        "id": "Kimentanm",
-        "name": "💎 Kimentanm",
-        "url": "https://gh.llkk.cc/https://raw.githubusercontent.com/Kimentanm/aptv/master/m3u/iptv.m3u",
-        "cover": TV_COVER,
-        "remarks": "Kimentanm",
-        "type": "m3u",
-        "ua": "AptvPlayer-UA"
-    },
-    {
-        "id": "游魂",
-        "name": "💎 游魂",
-        "url": "https://www.iyouhun.com/tv/zb",
         "cover": TV_COVER,
         "remarks": "简单直播源",
         "type": "txt",
@@ -153,41 +135,15 @@ ONLINE_LIVE_SOURCES = [
         "remarks": "rihou",
         "type": "txt",
         "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-    },
-    {
-        "id": "综合直播",
-        "name": "✨ 综合直播",
-        "url": "https://ds65.tv1288.xyz",
-        "cover": TV_COVER,
-        "remarks": "综合直播",
-        "type": "m3u",
-        "ua": "bingcha/1.1 (mianfeifenxiang)"
-    },
-    {
-        "id": "suxuang",
-        "name": "✨ suxuang",
-        "url": "https://gh-proxy.org/https://raw.githubusercontent.com/suxuang/myIPTV/main/ipv4.m3u",
-        "cover": TV_COVER,
-        "remarks": "suxuang",
-        "type": "m3u",
-        "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-    },
-    {
-        "id": "kulao_tv",
-        "name": "👖 裤佬TV直播",
-        "url": "https://gh-proxy.org/https://raw.githubusercontent.com/Jsnzkpg/Jsnzkpg/Jsnzkpg/Jsnzkpg1.m3u",
-        "cover": TV_COVER,
-        "remarks": "裤佬TV直播源",
-        "type": "m3u",
-        "playerType": 2,
-        "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
     }
+
 ]
 
 LIVE_CATEGORY_ID = "online_live"
 LIVE_CATEGORY_NAME = "📺 电视直播"
 LIVE_CACHE_DURATION = 600
 
+# ==================== 全局请求头自动适配配置 ====================
 COMMON_HEADERS_LIST = [
     {
         "name": "Chrome浏览器",
@@ -223,6 +179,33 @@ COMMON_HEADERS_LIST = [
             "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
             "Connection": "keep-alive"
         }
+    },
+    {
+        "name": "Edge浏览器",
+        "headers": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0",
+            "Accept": "*/*",
+            "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+            "Connection": "keep-alive"
+        }
+    },
+    {
+        "name": "Safari浏览器",
+        "headers": {
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15",
+            "Accept": "*/*",
+            "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+            "Connection": "keep-alive"
+        }
+    },
+    {
+        "name": "Android Chrome",
+        "headers": {
+            "User-Agent": "Mozilla/5.0 (Linux; Android 15) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
+            "Accept": "*/*",
+            "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+            "Connection": "keep-alive"
+        }
     }
 ]
 
@@ -235,6 +218,15 @@ DOMAIN_SPECIFIC_HEADERS = {
                 "Accept": "*/*",
                 "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
                 "Connection": "keep-alive",
+                "Referer": "https://www.miguvideo.com/"
+            }
+        },
+        {
+            "name": "咪咕专用-okhttp",
+            "headers": {
+                "User-Agent": "okhttp/3.12.11",
+                "Accept": "*/*",
+                "Connection": "Keep-Alive",
                 "Referer": "https://www.miguvideo.com/"
             }
         }
@@ -250,6 +242,16 @@ DOMAIN_SPECIFIC_HEADERS = {
             }
         }
     ],
+    "t.061899.xyz": [
+        {
+            "name": "t源专用",
+            "headers": {
+                "User-Agent": "okhttp/3.12.11",
+                "Referer": "http://t.061899.xyz/",
+                "Accept": "*/*"
+            }
+        }
+    ],
     "rihou.cc": [
         {
             "name": "日后源专用-Chrome",
@@ -257,696 +259,54 @@ DOMAIN_SPECIFIC_HEADERS = {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
                 "Referer": "https://rihou.cc:555/",
                 "Accept": "*/*",
+                "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
                 "Connection": "keep-alive"
+            }
+        },
+        {
+            "name": "日后源专用-okhttp",
+            "headers": {
+                "User-Agent": "okhttp/3.12.11",
+                "Referer": "http://rihou.cc:555/",
+                "Accept": "*/*",
+                "Connection": "Keep-Alive"
             }
         }
     ]
 }
 
+# ==================== 路径配置 ====================
+ROOT_PATHS = [
+    '/storage/emulated/0/',
+]
 
-class ComicReader:
-    SUPPORTED_EXTS = ['pdf', 'epub']
-    EPUB_TEXT_THRESHOLD = 10
-    FIRST_BATCH_PAGES = 200
-    
-    _render_executor = None
-    
-    @classmethod
-    def get_render_executor(cls):
-        if cls._render_executor is None:
-            import multiprocessing
-            cpu_count = multiprocessing.cpu_count()
-            thread_count = min(max(cpu_count * 12, 24), 48)
-            cls._render_executor = ThreadPoolExecutor(max_workers=thread_count, thread_name_prefix="PDFRender")
-            print(f"[PDF渲染线程池] 已启动 {thread_count} 个线程")
-        return cls._render_executor
-    
-    @classmethod
-    def shutdown_render_executor(cls):
-        if cls._render_executor:
-            cls._render_executor.shutdown(wait=False)
-            cls._render_executor = None
-    
-    @staticmethod
-    def is_supported(filename):
-        ext = filename.split('.')[-1].lower() if '.' in filename else ''
-        return ext in ComicReader.SUPPORTED_EXTS
-    
-    @staticmethod
-    def get_comic_preview_dir(file_path):
-        file_hash = hashlib.md5(file_path.encode()).hexdigest()[:16]
-        preview_dir = os.path.join(COMIC_PREVIEW_DIR, file_hash)
-        try:
-            if not os.path.exists(preview_dir):
-                os.makedirs(preview_dir, exist_ok=True)
-            return preview_dir
-        except:
-            os.makedirs(COMIC_PREVIEW_DIR, exist_ok=True)
-            return COMIC_PREVIEW_DIR
-    
-    @staticmethod
-    def _generate_pdf_cover(pdf_path, cover_path, max_width=400):
-        if not HAS_JAVA:
-            return False
-        try:
-            File = jclass("java.io.File")
-            ParcelFileDescriptor = jclass("android.os.ParcelFileDescriptor")
-            PdfRenderer = jclass("android.graphics.pdf.PdfRenderer")
-            Bitmap = jclass("android.graphics.Bitmap")
-            CompressFormat = jclass("android.graphics.Bitmap$CompressFormat")
+PATH_TO_CHINESE = {
+    '/storage/emulated/0/': '根目录',
+}
 
-            fd = ParcelFileDescriptor.open(
-                File(pdf_path),
-                ParcelFileDescriptor.MODE_READ_ONLY
-            )
-            renderer = PdfRenderer(fd)
-            
-            if renderer.getPageCount() > 0:
-                page = renderer.openPage(0)
-                width = page.getWidth()
-                height = page.getHeight()
-                if width > max_width:
-                    scale = max_width / width
-                    width = max_width
-                    height = int(height * scale)
-                
-                bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-                page.render(bitmap, None, None, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-                
-                fos = jclass("java.io.FileOutputStream")(cover_path)
-                bitmap.compress(CompressFormat.PNG, 85, fos)
-                fos.flush()
-                fos.close()
-                page.close()
-            
-            renderer.close()
-            fd.close()
-            return True
-        except Exception as e:
-            print(f"[PDF封面生成失败] {e}")
-            return False
-    
-    @staticmethod
-    def _generate_epub_cover(epub_path, cover_path):
-        try:
-            import zipfile
-            with zipfile.ZipFile(epub_path, 'r') as zf:
-                cover_names = ['cover', 'Cover', 'COVER', 'titlepage', 'TitlePage']
-                img_files = []
-                
-                for name in zf.namelist():
-                    lname = name.lower()
-                    if any(lname.endswith(ext) for ext in ['.png', '.jpg', '.jpeg', '.webp']):
-                        base = os.path.basename(lname)
-                        is_cover = any(cn.lower() in base for cn in cover_names) or 'cover' in lname
-                        if is_cover:
-                            img_files.insert(0, name)
-                        else:
-                            img_files.append(name)
-                
-                img_files.sort(key=lambda x: x.lower())
-                
-                if img_files:
-                    img_data = zf.read(img_files[0])
-                    with open(cover_path, 'wb') as f:
-                        f.write(img_data)
-                    return True
-        except Exception as e:
-            print(f"[EPUB封面生成失败] {e}")
-        return False
-    
-    @staticmethod
-    def get_cover_url(file_path):
-        if not os.path.exists(file_path):
-            return None
-        
-        ext = file_path.split('.')[-1].lower()
-        file_hash = hashlib.md5(file_path.encode()).hexdigest()
-        
-        os.makedirs(COMIC_CACHE_DIR, exist_ok=True)
-        
-        cache_exts = ['.jpg', '.jpeg', '.png', '.webp']
-        cache_file = None
-        for cext in cache_exts:
-            test_path = os.path.join(COMIC_CACHE_DIR, f"{file_hash}{cext}")
-            if os.path.exists(test_path):
-                cache_file = test_path
-                break
-        
-        if cache_file:
-            return f"file://{cache_file}"
-        
-        cache_file = os.path.join(COMIC_CACHE_DIR, f"{file_hash}.jpg")
-        
-        success = False
-        if ext == 'pdf':
-            success = ComicReader._generate_pdf_cover(file_path, cache_file)
-        elif ext == 'epub':
-            success = ComicReader._generate_epub_cover(file_path, cache_file)
-        
-        if success and os.path.exists(cache_file):
-            return f"file://{cache_file}"
-        
-        return ComicReader._get_default_comic_icon(ext)
-    
-    @staticmethod
-    def _get_default_comic_icon(ext):
-        if ext == 'pdf':
-            return "https://img.icons8.com/color/96/000000/pdf-2.png"
-        else:
-            return "https://img.icons8.com/color/96/000000/epub.png"
-    
-    @staticmethod
-    def get_pdf_page_count(pdf_path):
-        if not HAS_JAVA:
-            return 0
-        try:
-            File = jclass("java.io.File")
-            ParcelFileDescriptor = jclass("android.os.ParcelFileDescriptor")
-            PdfRenderer = jclass("android.graphics.pdf.PdfRenderer")
-            
-            fd = ParcelFileDescriptor.open(
-                File(pdf_path),
-                ParcelFileDescriptor.MODE_READ_ONLY
-            )
-            renderer = PdfRenderer(fd)
-            page_count = renderer.getPageCount()
-            renderer.close()
-            fd.close()
-            return page_count
-        except Exception as e:
-            print(f"[PDF页数获取失败] {e}")
-            return 0
-    
-    @staticmethod
-    def render_pdf_page(pdf_path, page_num, output_path, max_width=800):
-        if not HAS_JAVA:
-            return False
-        try:
-            File = jclass("java.io.File")
-            ParcelFileDescriptor = jclass("android.os.ParcelFileDescriptor")
-            PdfRenderer = jclass("android.graphics.pdf.PdfRenderer")
-            Bitmap = jclass("android.graphics.Bitmap")
-            CompressFormat = jclass("android.graphics.Bitmap$CompressFormat")
+# ==================== 缓存路径配置 ====================
+COVER_CACHE_DIR = '/storage/emulated/0/tmp/covers/'
+LYRICS_CACHE_DIR = '/storage/emulated/0/tmp/lyrics/'
+RADIO_COVER_CACHE_DIR = '/storage/emulated/0/tmp/radio_covers/'
+RADIO_SCAN_RECORD_FILE = '/storage/emulated/0/tmp/radio_scan_record.json'
+COVER_SCAN_RECORD_FILE = '/storage/emulated/0/tmp/cover_scan_record.json'
 
-            fd = ParcelFileDescriptor.open(
-                File(pdf_path),
-                ParcelFileDescriptor.MODE_READ_ONLY
-            )
-            renderer = PdfRenderer(fd)
-            
-            if page_num < renderer.getPageCount():
-                page = renderer.openPage(page_num)
-                width = page.getWidth()
-                height = page.getHeight()
-                if width > max_width:
-                    scale = max_width / width
-                    width = max_width
-                    height = int(height * scale)
-                
-                bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-                page.render(bitmap, None, None, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-                
-                fos = jclass("java.io.FileOutputStream")(output_path)
-                bitmap.compress(CompressFormat.JPEG, 75, fos)
-                fos.flush()
-                fos.close()
-                page.close()
-            
-            renderer.close()
-            fd.close()
-            return True
-        except Exception as e:
-            print(f"[PDF单页渲染失败] page {page_num}: {e}")
-            return False
-    
-    @staticmethod
-    def render_pdf_first_batch(pdf_path, pdf_name):
-        if not HAS_JAVA:
-            return 0, []
-        
-        try:
-            page_count = ComicReader.get_pdf_page_count(pdf_path)
-            if page_count == 0:
-                return 0, []
-            
-            preview_dir = ComicReader.get_comic_preview_dir(pdf_path)
-            
-            all_cached = True
-            for i in range(min(page_count, 200)):
-                out_path = os.path.join(preview_dir, f"page_{i:04d}.jpg")
-                if not os.path.exists(out_path):
-                    all_cached = False
-                    break
-            
-            if all_cached:
-                img_urls = []
-                for i in range(page_count):
-                    out_path = os.path.join(preview_dir, f"page_{i:04d}.jpg")
-                    if os.path.exists(out_path):
-                        img_urls.append(f"file://{out_path}")
-                print(f"[PDF已缓存] {pdf_name}, 全部{len(img_urls)}页秒开")
-                return len(img_urls), img_urls
-            
-            render_limit = min(ComicReader.FIRST_BATCH_PAGES, page_count)
-            
-            tasks = []
-            for i in range(render_limit):
-                out_path = os.path.join(preview_dir, f"page_{i:04d}.jpg")
-                if not os.path.exists(out_path):
-                    tasks.append((i, out_path))
-            
-            if not tasks:
-                img_urls = [f"file://{os.path.join(preview_dir, f'page_{i:04d}.jpg')}" for i in range(render_limit)]
-                print(f"[PDF已缓存] {pdf_name}, 前{render_limit}页")
-                return render_limit, img_urls
-            
-            print(f"[PDF并发渲染] {pdf_name}, 开始并发渲染前{len(tasks)}/{render_limit}页")
-            start_time = time.time()
-            
-            executor = ComicReader.get_render_executor()
-            futures = {}
-            
-            for i, out_path in tasks:
-                future = executor.submit(ComicReader.render_pdf_page, pdf_path, i, out_path)
-                futures[future] = (i, out_path)
-            
-            timeout = max(30, render_limit * 0.3)
-            completed = 0
-            failed = 0
-            
-            for future in futures:
-                try:
-                    future.result(timeout=timeout)
-                    completed += 1
-                except Exception as e:
-                    i, out_path = futures[future]
-                    print(f"[PDF渲染超时] page {i}: {e}")
-                    ComicReader.render_pdf_page(pdf_path, i, out_path)
-                    failed += 1
-            
-            elapsed = time.time() - start_time
-            print(f"[PDF并发渲染完成] {pdf_name}, 成功{completed}页, 失败{failed}页, 耗时{elapsed:.1f}秒")
-            
-            img_urls = []
-            for i in range(render_limit):
-                out_path = os.path.join(preview_dir, f"page_{i:04d}.jpg")
-                if os.path.exists(out_path):
-                    img_urls.append(f"file://{out_path}")
-                else:
-                    ComicReader.render_pdf_page(pdf_path, i, out_path)
-                    img_urls.append(f"file://{out_path}")
-            
-            if page_count > render_limit:
-                ComicReader._lazy_render_remaining_pages_concurrent(pdf_path, pdf_name, render_limit, page_count, preview_dir)
-            
-            return len(img_urls), img_urls
-        except Exception as e:
-            print(f"[PDF渲染失败] {e}")
-            return 0, []
-    
-    @staticmethod
-    def _lazy_render_remaining_pages_concurrent(pdf_path, pdf_name, start_page, total_pages, preview_dir):
-        def render_remaining_concurrent():
-            remaining = total_pages - start_page
-            if remaining <= 0:
-                return
-            
-            print(f"[PDF后台渲染] {pdf_name}, 开始后台渲染剩余{remaining}页")
-            start_time = time.time()
-            
-            executor = ComicReader.get_render_executor()
-            futures = {}
-            
-            for i in range(start_page, total_pages):
-                out_path = os.path.join(preview_dir, f"page_{i:04d}.jpg")
-                if not os.path.exists(out_path):
-                    future = executor.submit(ComicReader.render_pdf_page, pdf_path, i, out_path)
-                    futures[future] = (i, out_path)
-            
-            for future in futures:
-                try:
-                    future.result(timeout=300)
-                except Exception as e:
-                    i, out_path = futures[future]
-                    print(f"[PDF后台渲染失败] page {i}: {e}")
-            
-            elapsed = time.time() - start_time
-            print(f"[PDF后台渲染完成] {pdf_name}, 剩余{remaining}页, 耗时{elapsed:.1f}秒")
-        
-        background_thread = threading.Thread(target=render_remaining_concurrent, daemon=True)
-        background_thread.start()
-    
-    @staticmethod
-    def extract_epub_all_images(epub_path, epub_name):
-        preview_dir = ComicReader.get_comic_preview_dir(epub_path)
-        
-        existing_images = [f for f in os.listdir(preview_dir) 
-                          if f.endswith(('.jpg','.jpeg','.webp','.gif'))]
-        if existing_images:
-            existing_images.sort()
-            img_urls = [f"file://{os.path.join(preview_dir, img)}" for img in existing_images]
-            print(f"[EPUB已缓存] {epub_name}, {len(img_urls)}张图片")
-            return len(img_urls), img_urls, preview_dir
-        
-        img_urls = []
-        try:
-            import zipfile
-            with zipfile.ZipFile(epub_path, 'r') as zf:
-                image_exts = ('.png', '.jpg', '.jpeg', '.webp', '.gif')
-                img_files = []
-                cover_names = ['cover', 'Cover', 'COVER', 'titlepage']
-                
-                for name in zf.namelist():
-                    lname = name.lower()
-                    if any(lname.endswith(ext) for ext in image_exts):
-                        base = os.path.basename(lname)
-                        is_cover = any(cn.lower() in base for cn in cover_names) or 'cover' in lname
-                        if is_cover:
-                            img_files.insert(0, name)
-                        else:
-                            img_files.append(name)
-                
-                img_files.sort(key=lambda x: x.lower())
-                
-                executor = ComicReader.get_render_executor()
-                futures = []
-                
-                for idx, img_name in enumerate(img_files):
-                    ext = os.path.splitext(img_name)[1].lower()
-                    if not ext or ext not in image_exts:
-                        ext = '.jpg'
-                    out_filename = f"page_{idx:04d}{ext}"
-                    out_path = os.path.join(preview_dir, out_filename)
-                    if not os.path.exists(out_path):
-                        future = executor.submit(ComicReader._extract_single_epub_image, epub_path, img_name, out_path)
-                        futures.append((idx, future, out_path))
-                    else:
-                        img_urls.append(f"file://{out_path}")
-                
-                for idx, future, out_path in futures:
-                    try:
-                        future.result(timeout=10)
-                        img_urls.append(f"file://{out_path}")
-                    except Exception as e:
-                        print(f"[EPUB图片提取失败]: {e}")
-            
-            print(f"[EPUB提取完成] {epub_name}, {len(img_urls)}张图片")
-            return len(img_urls), img_urls, preview_dir
-        except Exception as e:
-            print(f"[EPUB提取失败] {e}")
-            return 0, [], None
-    
-    @staticmethod
-    def _extract_single_epub_image(epub_path, img_name, out_path):
-        try:
-            import zipfile
-            with zipfile.ZipFile(epub_path, 'r') as zf:
-                data = zf.read(img_name)
-                with open(out_path, 'wb') as f:
-                    f.write(data)
-            return True
-        except:
-            return False
-    
-    @staticmethod
-    def extract_epub_chapters(epub_path):
-        chapters = []
-        try:
-            import zipfile
-            with zipfile.ZipFile(epub_path, 'r') as zf:
-                if "META-INF/container.xml" not in zf.namelist():
-                    return []
-                
-                container = zf.read("META-INF/container.xml")
-                root = ET.fromstring(container)
-                ns = {'ns': 'urn:oasis:names:tc:opendocument:xmlns:container'}
-                rootfile_path = root.find('.//ns:rootfile', ns).get('full-path')
-                
-                opf_data = zf.read(rootfile_path)
-                opf_root = ET.fromstring(opf_data)
-                opf_ns = {'opf': 'http://www.idpf.org/2007/opf'}
-                
-                items = {}
-                for item in opf_root.findall('.//opf:item', opf_ns):
-                    items[item.get('id')] = {
-                        'href': item.get('href'),
-                        'media_type': item.get('media-type', '')
-                    }
-                
-                spine = opf_root.find('.//opf:spine', opf_ns)
-                if spine is None:
-                    return []
-                
-                base_dir = os.path.dirname(rootfile_path)
-                chapter_idx = 0
-                
-                for itemref in spine.findall('opf:itemref', opf_ns):
-                    idref = itemref.get('idref')
-                    if idref not in items:
-                        continue
-                    
-                    item_info = items[idref]
-                    media_type = item_info['media_type']
-                    if media_type not in ('application/xhtml+xml', 'text/html', 'application/xml'):
-                        continue
-                    
-                    href = item_info['href']
-                    import posixpath
-                    full_path = posixpath.join(base_dir, href) if base_dir else href
-                    if full_path not in zf.namelist():
-                        continue
-                    
-                    raw = zf.read(full_path)
-                    try:
-                        content = raw.decode('utf-8')
-                    except:
-                        content = raw.decode('latin-1', errors='ignore')
-                    
-                    title = None
-                    for h_tag in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
-                        m = re.search(rf'<{h_tag}[^>]*>(.*?)</{h_tag}>', content, re.IGNORECASE | re.DOTALL)
-                        if m:
-                            raw_title = re.sub(r'<[^>]+>', '', m.group(1)).strip()
-                            raw_title = re.sub(r'^\d+\s*', '', raw_title)
-                            if raw_title:
-                                title = raw_title
-                                break
-                    
-                    if not title:
-                        m = re.search(r'<title[^>]*>(.*?)</title>', content, re.IGNORECASE | re.DOTALL)
-                        if m:
-                            raw_title = re.sub(r'<[^>]+>', '', m.group(1)).strip()
-                            raw_title = re.sub(r'^\d+\s*', '', raw_title)
-                            title = raw_title
-                    
-                    if not title:
-                        title = f"第{chapter_idx + 1}章"
-                    
-                    text = content
-                    text = re.sub(r'<script[^>]*>.*?</script>', '', text, flags=re.DOTALL | re.IGNORECASE)
-                    text = re.sub(r'<style[^>]*>.*?</style>', '', text, flags=re.DOTALL | re.IGNORECASE)
-                    
-                    block_tags = ['p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'blockquote']
-                    for tag in block_tags:
-                        text = re.sub(rf'<{tag}[^>]*>', '\n\n', text, flags=re.IGNORECASE)
-                        text = re.sub(rf'</{tag}>', '\n', text, flags=re.IGNORECASE)
-                    
-                    text = re.sub(r'<br\s*/?>', '\n', text, flags=re.IGNORECASE)
-                    text = re.sub(r'<[^>]+>', ' ', text)
-                    text = text.replace('&nbsp;', ' ').replace('&amp;', '&')
-                    text = text.replace('&lt;', '<').replace('&gt;', '>')
-                    text = re.sub(r'[ \t]+', ' ', text)
-                    text = re.sub(r'\n{3,}', '\n\n', text)
-                    text = text.strip()
-                    
-                    if text:
-                        chapters.append({
-                            'title': title,
-                            'content': text,
-                            'index': chapter_idx
-                        })
-                        chapter_idx += 1
-            
-            return chapters
-        except Exception as e:
-            print(f"[EPUB章节提取失败] {e}")
-            return []
-    
-    @staticmethod
-    def get_epub_image_count(epub_path):
-        try:
-            import zipfile
-            with zipfile.ZipFile(epub_path, 'r') as zf:
-                image_exts = ('.png', '.jpg', '.jpeg', '.webp', '.gif')
-                return sum(1 for name in zf.namelist() 
-                          if name.lower().endswith(image_exts))
-        except:
-            return 0
-    
-    @staticmethod
-    def get_comic_detail(file_path, filename):
-        ext = filename.split('.')[-1].lower() if '.' in filename else ''
-        
-        if ext == 'pdf':
-            if not HAS_JAVA:
-                return {"list": [{
-                    "vod_id": file_path,
-                    "vod_name": os.path.splitext(filename)[0],
-                    "vod_pic": ComicReader._get_default_comic_icon(ext),
-                    "vod_remarks": "需要Java支持",
-                    "vod_actor": "PDF"
-                }]}
-            
-            page_count, img_urls = ComicReader.render_pdf_first_batch(file_path, filename)
-            cover_url = ComicReader.get_cover_url(file_path)
-            
-            if img_urls:
-                play_url = "pics://" + "&&".join(img_urls)
-                total_pages = ComicReader.get_pdf_page_count(file_path)
-                if page_count >= total_pages:
-                    remarks = f"{page_count}页 | PDF (已全部缓存)"
-                else:
-                    remarks = f"{page_count}/{total_pages}页 | 后台继续缓存..."
-                
-                return {
-                    "list": [{
-                        "vod_id": f"comic_pdf_{hashlib.md5(file_path.encode()).hexdigest()}",
-                        "vod_name": os.path.splitext(filename)[0],
-                        "vod_pic": cover_url,
-                        "vod_play_from": "PDF漫画",
-                        "vod_play_url": play_url,
-                        "vod_remarks": remarks,
-                        "vod_actor": "漫画",
-                        "vod_player": "画"
-                    }]
-                }
-        
-        elif ext == 'epub':
-            img_count = ComicReader.get_epub_image_count(file_path)
-            
-            if img_count >= ComicReader.EPUB_TEXT_THRESHOLD:
-                page_count, img_urls, _ = ComicReader.extract_epub_all_images(file_path, filename)
-                if img_urls:
-                    play_url = "pics://" + "&&".join(img_urls)
-                    cover_url = ComicReader.get_cover_url(file_path)
-                    
-                    return {
-                        "list": [{
-                            "vod_id": f"comic_epub_{hashlib.md5(file_path.encode()).hexdigest()}",
-                            "vod_name": os.path.splitext(filename)[0],
-                            "vod_pic": cover_url or img_urls[0],
-                            "vod_play_from": "EPUB漫画",
-                            "vod_play_url": play_url,
-                            "vod_remarks": f"{page_count}页 | EPUB(图片)",
-                            "vod_actor": "漫画",
-                            "vod_player": "画"
-                        }]
-                    }
-            else:
-                chapters = ComicReader.extract_epub_chapters(file_path)
-                if chapters:
-                    encoded_path = ComicReader._b64u_encode(file_path)
-                    novel_id = f"novel://{encoded_path}"
-                    
-                    play_url_parts = []
-                    for idx, ch in enumerate(chapters):
-                        title = ch['title'].replace('$', ' ').replace('#', ' ')
-                        play_url_parts.append(f"{title}${novel_id}?chapter={idx}")
-                    
-                    play_url = "#".join(play_url_parts)
-                    cover_url = ComicReader.get_cover_url(file_path)
-                    
-                    return {
-                        "list": [{
-                            "vod_id": novel_id,
-                            "vod_name": os.path.splitext(filename)[0],
-                            "vod_pic": cover_url or ComicReader._get_default_comic_icon(ext),
-                            "vod_play_from": "EPUB文本",
-                            "vod_play_url": play_url,
-                            "vod_remarks": f"{len(chapters)}章 | EPUB",
-                            "vod_actor": "小说",
-                            "vod_player": "书"
-                        }]
-                    }
-                else:
-                    page_count, img_urls, _ = ComicReader.extract_epub_all_images(file_path, filename)
-                    if img_urls:
-                        play_url = "pics://" + "&&".join(img_urls)
-                        cover_url = ComicReader.get_cover_url(file_path)
-                        return {
-                            "list": [{
-                                "vod_id": f"comic_epub_{hashlib.md5(file_path.encode()).hexdigest()}",
-                                "vod_name": os.path.splitext(filename)[0],
-                                "vod_pic": cover_url or img_urls[0],
-                                "vod_play_from": "EPUB漫画",
-                                "vod_play_url": play_url,
-                                "vod_remarks": f"{page_count}页 | EPUB",
-                                "vod_actor": "漫画",
-                                "vod_player": "画"
-                            }]
-                        }
-        
-        return {"list": []}
-    
-    @staticmethod
-    def _b64u_encode(data):
-        if isinstance(data, str):
-            data = data.encode('utf-8')
-        encoded = base64.b64encode(data).decode('ascii')
-        return encoded.replace('+', '-').replace('/', '_').rstrip('=')
-    
-    @staticmethod
-    def _b64u_decode(data):
-        data = data.replace('-', '+').replace('_', '/')
-        pad = len(data) % 4
-        if pad:
-            data += '=' * (4 - pad)
-        return base64.b64decode(data).decode('utf-8')
-    
-    @staticmethod
-    def clear_all_cache():
-        cover_count = 0
-        cover_size = 0
-        preview_count = 0
-        preview_size = 0
-        
-        if os.path.exists(COMIC_CACHE_DIR):
-            for filename in os.listdir(COMIC_CACHE_DIR):
-                if filename == '.nomedia':
-                    continue
-                file_path = os.path.join(COMIC_CACHE_DIR, filename)
-                if os.path.isfile(file_path):
-                    cover_size += os.path.getsize(file_path)
-                    os.remove(file_path)
-                    cover_count += 1
-        
-        if os.path.exists(COMIC_PREVIEW_DIR):
-            for root, dirs, files in os.walk(COMIC_PREVIEW_DIR):
-                for file in files:
-                    if file == '.nomedia':
-                        continue
-                    file_path = os.path.join(root, file)
-                    try:
-                        preview_size += os.path.getsize(file_path)
-                        os.remove(file_path)
-                        preview_count += 1
-                    except:
-                        pass
-        
-        total_size = cover_size + preview_size
-        total_count = cover_count + preview_count
-        
-        if total_size > 1024 * 1024:
-            size_str = f"{total_size / (1024 * 1024):.2f} MB"
-        elif total_size > 1024:
-            size_str = f"{total_size / 1024:.2f} KB"
-        else:
-            size_str = f"{total_size} B"
-        
-        return total_count, size_str
+# 实时节目缓存时长（5分钟）
+LIVE_PROGRAM_CACHE_DURATION = 300
+
+# ==================== 数据库兼容配置 ====================
+DB_COMPAT_MODE = True
+MAX_DB_RESULTS = 50000
+
+print("ℹ️ 本地资源管理加载成功 - 智能多策略封面提取版")
+print("✅ 在线直播UA已修复 - 每个直播源可独立配置UA，播放时自动生效")
+print("✅ 连点删除功能已启用 - 播放界面连续点击同一首歌3次可删除")
+print("✅ 删除模式支持删除文件夹")
+print("✅ 删除模式开启/关闭使用缓存，防止页面刷新到顶部")
+print("✅ 缓存图片目录已添加 .nomedia 文件，防止相册扫描")
 
 
+# ==================== 实时电台节目信息获取器 ====================
 class RadioProgramFetcher:
     _cache = {}
     _cache_time = {}
@@ -999,6 +359,9 @@ class RadioProgramFetcher:
                 r'节目[：:]\s*([^<>\n]+)',
                 r'"programName"\s*:\s*"([^"]+)"',
                 r'<div class="program-name"[^>]*>([^<]+)</div>',
+                r'<div class="current"[^>]*>.*?<a[^>]*>([^<]+)</a>',
+                r'<span class="program-title">([^<]+)</span>',
+                r'<div class="radio-info">.*?<strong>([^<]+)</strong>',
             ]
             
             for pattern in current_patterns:
@@ -1010,6 +373,7 @@ class RadioProgramFetcher:
             time_patterns = [
                 r'(\d{1,2}:\d{2})\s*[-~]\s*(\d{1,2}:\d{2})',
                 r'(\d{1,2}:\d{2})\s*至\s*(\d{1,2}:\d{2})',
+                r'(\d{1,2}:\d{2})-(\d{1,2}:\d{2})',
             ]
             for pattern in time_patterns:
                 match = re.search(pattern, html)
@@ -1021,6 +385,7 @@ class RadioProgramFetcher:
                 r'即将播放[：:]\s*<[^>]*>([^<]+)</',
                 r'next-program[^>]*>.*?<span[^>]*>([^<]+)</span>',
                 r'下一节目[：:]\s*([^<>\n]+)',
+                r'<div class="next-program">.*?<span>([^<]+)</span>',
             ]
             for pattern in next_patterns:
                 match = re.search(pattern, html, re.IGNORECASE | re.DOTALL)
@@ -1061,6 +426,7 @@ class RadioProgramFetcher:
             return "深夜时段"
 
 
+# ==================== 数据库读取器 ====================
 class DatabaseReader:
     def __init__(self):
         self.cache = {}
@@ -1082,6 +448,10 @@ class DatabaseReader:
             conn = sqlite3.connect(db_path)
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
+            
+            cursor.execute("PRAGMA cache_size = 10000")
+            cursor.execute("PRAGMA page_size = 4096")
+            cursor.execute("PRAGMA mmap_size = 30000000000")
             
             cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'android_%'")
             tables = cursor.fetchall()
@@ -1158,6 +528,7 @@ class DatabaseReader:
         return None
 
 
+# ==================== 小说解析器 ====================
 class NovelParser:
     @staticmethod
     def parse_txt_novel(file_path):
@@ -1205,6 +576,7 @@ class NovelParser:
         return chapters
 
 
+# ==================== 封面扫描记录管理器 ====================
 class CoverScanRecord:
     @staticmethod
     def load_record():
@@ -1252,6 +624,7 @@ class CoverScanRecord:
             return False
 
 
+# ==================== 电台封面扫描记录管理器 ====================
 class RadioCoverRecord:
     @staticmethod
     def load_record():
@@ -1296,6 +669,7 @@ class RadioCoverRecord:
             return False
 
 
+# ==================== 歌词缓存管理器 ====================
 class LyricsCacheManager:
     @staticmethod
     def get_cache_dir():
@@ -1402,6 +776,7 @@ class LyricsCacheManager:
         return deleted_count, deleted_size
 
 
+# ==================== 智能多策略封面提取器 ====================
 class UltraFastCoverExtractor:
     @staticmethod
     def _compress_image(image_data, max_size=(300, 300), quality=65):
@@ -1728,293 +1103,277 @@ class UltraFastCoverExtractor:
             return None
 
 
-# ==================== 动作/工具/书签浏览器（修复版） ====================
-class WebActionBrowser:
-    """网页浏览器 - 支持动作、工具、书签管理"""
-    
-    def __init__(self):
-        self.port = 8901
-        self.bookmark_file = '/storage/emulated/0/tmp/web_bookmarks.json'
-        self.bookmarks = []
-        self._load_bookmarks()
-    
-    def _load_bookmarks(self):
-        try:
-            if os.path.exists(self.bookmark_file):
-                with open(self.bookmark_file, 'r', encoding='utf-8') as f:
-                    self.bookmarks = json.load(f)
-            else:
-                self.bookmarks = []
-        except:
-            self.bookmarks = []
-    
-    def _save_bookmarks(self):
-        try:
-            os.makedirs(os.path.dirname(self.bookmark_file), exist_ok=True)
-            with open(self.bookmark_file, 'w', encoding='utf-8') as f:
-                json.dump(self.bookmarks, f, ensure_ascii=False, indent=2)
-        except:
-            pass
-    
-    def _add_bookmark(self, url, title=""):
-        if not url.startswith(('http://', 'https://')):
-            url = 'https://' + url
-        
-        for bm in self.bookmarks:
-            if bm['url'] == url:
-                return False, f"❌ 书签已存在\n\n📌 {bm['title']}\n🔗 {bm['url']}"
-        
-        if not title:
-            title = url.replace('https://', '').replace('http://', '').split('/')[0][:25]
-        
-        self.bookmarks.append({
-            'id': hashlib.md5(url.encode()).hexdigest()[:8],
-            'url': url,
-            'title': title,
-            'add_time': time.time()
-        })
-        self._save_bookmarks()
-        return True, f"✅ 添加成功！\n\n📌 {title}\n🔗 {url[:50]}..."
-    
-    def _delete_bookmark(self, keyword):
-        for bm in self.bookmarks[:]:
-            if bm['title'] == keyword or bm['url'] == keyword or keyword in bm['url']:
-                title = bm['title']
-                url = bm['url']
-                self.bookmarks.remove(bm)
-                self._save_bookmarks()
-                return True, f"✅ 删除成功！\n\n📌 {title}\n🔗 {url[:50]}..."
-        return False, "❌ 未找到书签\n\n请输入正确的书签名或网址"
-    
-    def _edit_bookmark(self, old, new_title):
-        for bm in self.bookmarks:
-            if bm['title'] == old or bm['url'] == old:
-                old_title = bm['title']
-                old_url = bm['url']
-                bm['title'] = new_title
-                self._save_bookmarks()
-                return True, f"✅ 修改成功！\n\n📌 {old_title} → {new_title}\n🔗 {old_url[:50]}..."
-        return False, "❌ 未找到书签\n\n请输入正确的原书签名或网址"
-    
-    # 关键修复：直接返回 action 格式，让系统打开浏览器
-    def _open_url(self, url):
+# ==================== WebView 网页浏览器 ====================
+class WebViewBrowser:
+    @staticmethod
+    def is_local_url(url):
         if not url:
-            return None
-        
-        if not url.startswith(('http://', 'https://')):
-            url = 'https://' + url
-        
-        name = url.replace('https://', '').replace('http://', '').split('/')[0][:30]
-        
-        return {
-            'action': {
-                'actionId': 'OPEN_URL',
-                'type': 'browser',
-                'title': name,
-                'url': url
-            }
-        }
+            return False
+        url_lower = url.lower()
+        return ('localhost' in url_lower or 
+                '127.0.0.1' in url_lower or
+                '192.168.' in url_lower or
+                '10.' in url_lower or
+                '172.' in url_lower or
+                'file://' in url_lower)
     
-    def _generate_colored_icon(self, color, text):
-        svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
-            <rect width="200" height="200" rx="40" ry="40" fill="{color}"/>
-            <circle cx="100" cy="100" r="70" fill="white" opacity="0.3"/>
-            <text x="100" y="140" font-size="100" text-anchor="middle" fill="white" font-family="Arial" font-weight="bold">{text}</text>
-        </svg>'''
-        return f"data:image/svg+xml;base64,{base64.b64encode(svg.encode()).decode()}"
+    @staticmethod
+    def get_theme_color(url, name=""):
+        url_lower = url.lower()
+        if 'baidu' in url_lower:
+            return '#1E90FF', '百度'
+        elif 'bilibili' in url_lower:
+            return '#00A1D6', 'B站'
+        elif 'zhihu' in url_lower:
+            return '#0084FF', '知乎'
+        elif '163.com' in url_lower or 'music.163.com' in url_lower:
+            return '#D43D3D', '网易云音乐'
+        elif 'kwai' in url_lower:
+            return '#FE2C55', '快手'
+        elif 'douyin' in url_lower:
+            return '#000000', '抖音'
+        elif 'github' in url_lower:
+            return '#24292E', 'GitHub'
+        elif 'youtube' in url_lower:
+            return '#FF0000', 'YouTube'
+        elif 'twitter' in url_lower:
+            return '#1DA1F2', 'Twitter'
+        elif 'facebook' in url_lower:
+            return '#1877F2', 'Facebook'
+        elif 'instagram' in url_lower:
+            return '#E4405F', 'Instagram'
+        elif 'tiktok' in url_lower:
+            return '#000000', 'TikTok'
+        elif 'reddit' in url_lower:
+            return '#FF4500', 'Reddit'
+        elif 'taobao' in url_lower:
+            return '#FF6A00', '淘宝'
+        elif 'jd.com' in url_lower:
+            return '#E31937', '京东'
+        elif 'weibo' in url_lower:
+            return '#FF9900', '微博'
+        elif 'qq.com' in url_lower:
+            return '#12B7F5', '腾讯'
+        elif 'whos.tv' in url_lower:
+            return '#8B4513', 'WhosTV'
+        elif 'yikm.net' in url_lower:
+            return '#2E8B57', '小游戏'
+        elif 'wallhaven.cc' in url_lower:
+            return '#4A4A4A', '壁纸'
+        elif 'tophub.today' in url_lower:
+            return '#FF8C00', '热榜'
+        elif 'cataas.com' in url_lower:
+            return '#FFA500', '猫咪'
+        elif 'stumbled.cc' in url_lower:
+            return '#8FBC8F', '发现'
+        else:
+            hash_val = sum([ord(c) for c in url_lower[:20]]) % 360
+            return f'hsl({hash_val}, 70%, 45%)', '网页'
     
-    def _create_result_vod(self, message, success=True):
-        color = "#4CAF50" if success else "#F44336"
-        icon = "✓" if success else "✗"
+    @staticmethod
+    def build_themed_html(url, name=""):
+        theme_color, site_name = WebViewBrowser.get_theme_color(url, name)
+        display_title = name if name else site_name
         
-        return {
-            'list': [{
-                'vod_id': 'action_result',
-                'vod_name': message,
-                'vod_pic': self._generate_colored_icon(color, icon),
-                'vod_remarks': '操作完成' if success else '操作失败',
-                'style': {'type': 'list'},
-                'vod_player': '书'
-            }],
-            'page': 1,
-            'pagecount': 1,
-            'limit': 1,
-            'total': 1
-        }
-    
-    def _create_vod_item(self, name, action_id, params):
-        config = {'actionId': action_id, **params}
-        numid = f"{random.randint(1, 999):03d}"
-        return {
-            'vod_id': json.dumps(config, ensure_ascii=False),
-            'vod_name': name,
-            'vod_pic': f"https://picsum.photos/200/300?random={int(time.time())}{numid}",
-            'vod_remarks': '',
-            'vod_tag': 'action',
-            'style': {'type': 'grid', 'ratio': 0.75}
-        }
-    
-    def _get_action_list(self):
-        return [
-            self._create_vod_item('🌐 访问网址', '访问网址', {'id': 'text', 'type': 'input', 'title': '网址输入', 'tip': '输入网址，如 baidu.com'}),
-            self._create_vod_item('📌 添加书签', '添加书签', {'id': 'text', 'type': 'input', 'title': '添加书签', 'tip': '格式: 名称@网址  或直接输入网址'}),
-            self._create_vod_item('🗑️ 删除书签', '删除书签', {'id': 'text', 'type': 'input', 'title': '删除书签', 'tip': '输入书签名或网址'}),
-            self._create_vod_item('✏️ 修改书签名', '修改书签名', {'id': 'text', 'type': 'input', 'title': '修改书签名', 'tip': '格式: 原书签|新名称  例: 百度|百度一下'}),
-        ]
-    
-    def _get_tool_list(self):
-        return [
-            self._create_vod_item('📖PDF阅读器', 'OPEN_URL', {'url': f'http://localhost:{self.port}/PDF阅读器.php'}),
-            self._create_vod_item('🔓 解密工具', 'OPEN_URL', {'url': f'http://localhost:{self.port}/html/jiema.html'}),
-            self._create_vod_item('🎮 喜刷刷', 'OPEN_URL', {'url': f'http://localhost:{self.port}/html/妹子.html'}),
-            self._create_vod_item('🎵 裤佬音乐', 'OPEN_URL', {'url': f'http://localhost:{self.port}/html/裤佬音乐.html'}),
-            self._create_vod_item('💢 直播', 'OPEN_URL', {'url': f'http://localhost:{self.port}/html/index.html'}),
-            self._create_vod_item('🎮 网页小游戏', 'OPEN_URL', {'url': 'https://www.yikm.net/nes?tag=9'}),
-            self._create_vod_item('📺 WhosTV', 'OPEN_URL', {'url': 'https://whos.tv/actresses'}),
-        ]
-    
-    def _get_bookmark_vod_list(self):
-        if not self.bookmarks:
-            return {
-                'list': [self._create_vod_item('📭 暂无书签，点击动作页添加', '添加书签', {})],
-                'page': 1,
-                'pagecount': 1,
-                'limit': 1,
-                'total': 1
-            }
+        mobile_url = url
+        if 'bilibili.com' in url:
+            mobile_url = url.replace('www.', 'm.').replace('https://bilibili.com', 'https://m.bilibili.com')
+        elif 'zhihu.com' in url:
+            mobile_url = url.replace('www.', 'm.')
+        elif 'kwai.com' in url:
+            mobile_url = url.replace('www.', 'm.')
         
-        items = []
-        for bm in reversed(self.bookmarks):
-            items.append(self._create_vod_item(f'📌 {bm["title"]}', 'OPEN_URL', {'url': bm['url']}))
+        from urllib.parse import urlparse
+        parsed = urlparse(mobile_url)
+        domain_name = parsed.netloc.replace('www.', '').split('.')[0] if parsed.netloc else '网页'
+        if domain_name == 'com' or domain_name == 'cn':
+            domain_name = parsed.netloc.replace('www.', '').split('.')[0] if '.' in parsed.netloc else '网页'
         
-        return {
-            'list': items,
-            'page': 1,
-            'pagecount': 1,
-            'limit': len(items),
-            'total': len(items)
-        }
+        html = f'''<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="{theme_color}">
+    <title>{display_title}</title>
+    <style>
+        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+        body {{ width: 100%; height: 100%; background: #f0f0f0; overflow: hidden; }}
+        
+        .titlebar {{
+            position: fixed; top: 0; left: 0; right: 0; height: 56px;
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(25px);
+            display: flex; align-items: center; padding: 0 16px; z-index: 10000;
+            border-bottom: 0.5px solid rgba(255,255,255,0.5);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+        }}
+        .back-btn {{
+            width: 40px; height: 40px; display: flex; align-items: center;
+            justify-content: center; border-radius: 12px; background: rgba(0,0,0,0.05);
+            cursor: pointer; margin-right: 12px; transition: all 0.2s ease;
+        }}
+        .back-btn:active {{ transform: scale(0.94); background: rgba(0,0,0,0.1); }}
+        .back-btn svg {{ width: 22px; height: 22px; stroke: #333; stroke-width: 2; fill: none; }}
+        .title-wrapper {{ flex: 1; overflow: hidden; }}
+        .site-title {{ font-size: 16px; font-weight: 600; color: #1a1a1a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
+        .site-url {{ font-size: 11px; color: rgba(0,0,0,0.55); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }}
+        .action-buttons {{ display: flex; gap: 8px; margin-left: 12px; }}
+        .action-btn {{
+            width: 40px; height: 40px; display: flex; align-items: center;
+            justify-content: center; border-radius: 12px; background: rgba(0,0,0,0.05);
+            cursor: pointer; transition: all 0.2s ease;
+        }}
+        .action-btn:active {{ transform: scale(0.94); background: rgba(0,0,0,0.1); }}
+        .action-btn svg {{ width: 20px; height: 20px; stroke: #333; stroke-width: 1.8; fill: none; }}
+        
+        .webview-container {{ position: fixed; top: 56px; left: 0; width: 100%; bottom: 0; background: #fff; }}
+        iframe {{ width: 100%; height: 100%; border: none; background: #fff; }}
+        
+        .loading-overlay {{
+            position: fixed; top: 56px; left: 0; width: 100%; bottom: 0;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(15px);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.3s ease;
+        }}
+        .loading-spinner {{
+            width: 48px; height: 48px;
+            border: 3px solid rgba(0,0,0,0.08);
+            border-top-color: {theme_color};
+            border-right-color: {theme_color};
+            border-radius: 50%;
+            animation: spin 0.8s cubic-bezier(0.4,0,0.2,1) infinite;
+        }}
+        @keyframes spin {{ to {{ transform: rotate(360deg); }} }}
+        .loading-text {{ margin-top: 16px; color: #666; font-size: 14px; font-weight: 500; }}
+        .loading-dots {{ display: inline-block; width: 28px; text-align: left; }}
+        
+        .bottom-tip {{
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(12px);
+            padding: 8px 20px; border-radius: 40px; z-index: 10001;
+            transition: transform 0.3s cubic-bezier(0.2,0.9,0.4,1.1); white-space: nowrap;
+        }}
+        .bottom-tip.show {{ transform: translateX(-50%) translateY(0); }}
+        .bottom-tip span {{ color: white; font-size: 13px; font-weight: 500; letter-spacing: 0.3px; }}
+        
+        .progress-bar {{
+            position: fixed; top: 56px; left: 0; width: 0%; height: 2px;
+            background: linear-gradient(90deg, {theme_color}, {theme_color}88, {theme_color});
+            z-index: 10001; transition: width 0.3s ease;
+            box-shadow: 0 0 6px {theme_color}66;
+        }}
+    </style>
+</head>
+<body>
+    <div class="titlebar">
+        <div class="back-btn" onclick="goBack()">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </div>
+        <div class="title-wrapper">
+            <div class="site-title" id="siteTitle">{display_title}</div>
+            <div class="site-url" id="siteUrl">{mobile_url[:50]}</div>
+        </div>
+        <div class="action-buttons">
+            <div class="action-btn refresh" onclick="refreshPage()">
+                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
+                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/>
+                    <path d="M20.49 15a9 9 0 0 1-14.85 3.36L1 14"/>
+                </svg>
+            </div>
+        </div>
+    </div>
     
-    def get_home_content(self):
-        bookmark_count = len(self.bookmarks)
-        return {
-            'class': [
-                {'type_id': 'web_action', 'type_name': '动作'},
-                {'type_id': 'web_tool', 'type_name': '工具'},
-                {'type_id': 'web_bookmarks', 'type_name': f'⭐ 书签({bookmark_count})'},
-            ]
-        }
+    <div class="webview-container">
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">加载中<span class="loading-dots" id="loadingDots">...</span></div>
+        </div>
+        <div class="progress-bar" id="progressBar"></div>
+        <iframe id="webFrame" src="{mobile_url}" allow="fullscreen"></iframe>
+    </div>
     
-    def get_category_content(self, tid, pg):
-        if int(pg) > 1:
-            return {'list': [], 'page': pg, 'pagecount': 1}
-        
-        if tid == 'web_bookmarks':
-            return self._get_bookmark_vod_list()
-        if tid == 'web_tool':
-            tools = self._get_tool_list()
-            return {'list': tools, 'page': pg, 'pagecount': 1, 'limit': len(tools), 'total': len(tools)}
-        if tid == 'web_action':
-            actions = self._get_action_list()
-            return {'list': actions, 'page': pg, 'pagecount': 1, 'limit': len(actions), 'total': len(actions)}
-        
-        return {'list': [], 'page': pg, 'pagecount': 1}
+    <div class="bottom-tip" id="bottomTip"><span>← 返回上一页 | 刷新 ↻</span></div>
     
-    def handle_action(self, action_str):
-        try:
-            obj = json.loads(action_str)
-            
-            act = obj.get('action', '')
-            action_id = obj.get('actionId', '')
-            value = obj.get('value', '')
-            
-            input_text = ''
-            if isinstance(value, dict) and "text" in value:
-                input_text = value["text"].strip()
-            
-            # 访问网址
-            if act == '访问网址' or action_id == '访问网址':
-                if input_text:
-                    result = self._open_url(input_text)
-                    if result:
-                        return result
-                    return self._create_result_vod("❌ 请输入有效的网址", False)
-                return {
-                    'actionId': '单项输入',
-                    'id': 'text',
-                    'type': 'input',
-                    'title': '🌐 访问网址',
-                    'tip': '输入网址，如 baidu.com',
-                    'value': '',
-                    'msg': '请输入网址'
-                }
-            
-            # 添加书签
-            if act == '添加书签' or action_id == '添加书签':
-                if input_text:
-                    title = ""
-                    url = input_text
-                    if '@' in input_text:
-                        parts = input_text.split('@', 1)
-                        title = parts[0].strip()
-                        url = parts[1].strip()
-                    success, msg = self._add_bookmark(url, title)
-                    return self._create_result_vod(msg, success)
-                return {
-                    'actionId': '单项输入',
-                    'id': 'text',
-                    'type': 'input',
-                    'title': '📌 添加书签',
-                    'tip': '格式: 名称@网址  或直接输入网址',
-                    'value': '',
-                    'msg': '请输入网址'
-                }
-            
-            # 删除书签
-            if act == '删除书签' or action_id == '删除书签':
-                if input_text:
-                    success, msg = self._delete_bookmark(input_text)
-                    return self._create_result_vod(msg, success)
-                return {
-                    'actionId': '单项输入',
-                    'id': 'text',
-                    'type': 'input',
-                    'title': '🗑️ 删除书签',
-                    'tip': '输入书签名或网址',
-                    'value': '',
-                    'msg': '请输入书签名或网址'
-                }
-            
-            # 修改书签名
-            if act == '修改书签名' or action_id == '修改书签名':
-                if input_text:
-                    if '|' in input_text:
-                        parts = input_text.split('|', 1)
-                        old = parts[0].strip()
-                        new = parts[1].strip()
-                        success, msg = self._edit_bookmark(old, new)
-                        return self._create_result_vod(msg, success)
-                    return "格式错误\n请输入: 原书签|新名称\n例如: 百度|百度一下"
-                return {
-                    'actionId': '单项输入',
-                    'id': 'text',
-                    'type': 'input',
-                    'title': '✏️ 修改书签名',
-                    'tip': '格式: 原书签|新名称  例: 百度|百度一下',
-                    'value': '',
-                    'msg': '请输入要修改的书签'
-                }
-            
-            # 关键修复：处理 OPEN_URL（书签点击、工具点击）
-            if action_id == 'OPEN_URL':
-                url = obj.get('url', '') or obj.get('value', '')
-                if url:
-                    return self._open_url(url)
-            
-        except Exception as e:
-            print(f"❌ WebActionBrowser action错误: {e}")
+    <script>
+        var iframe = document.getElementById('webFrame');
+        var loadingOverlay = document.getElementById('loadingOverlay');
+        var progressBar = document.getElementById('progressBar');
+        var bottomTip = document.getElementById('bottomTip');
+        var loadingDots = document.getElementById('loadingDots');
+        var dotCount = 0;
         
-        return self._create_result_vod("操作完成", True)
+        setInterval(function() {{
+            dotCount = (dotCount + 1) % 4;
+            loadingDots.innerHTML = '.'.repeat(dotCount === 0 ? 3 : dotCount);
+        }}, 400);
+        
+        setTimeout(function() {{
+            bottomTip.classList.add('show');
+            setTimeout(function() {{ bottomTip.classList.remove('show'); }}, 3500);
+        }}, 500);
+        
+        function updateUI() {{
+            try {{
+                var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                var iframeTitle = iframeDoc.title;
+                if (iframeTitle && iframeTitle.length > 0 && iframeTitle !== '{display_title}') {{
+                    document.getElementById('siteTitle').innerText = iframeTitle.substring(0, 50);
+                }}
+            }} catch(e) {{ }}
+        }}
+        
+        function startProgress() {{
+            progressBar.style.width = '30%';
+            setTimeout(function() {{ progressBar.style.width = '70%'; }}, 500);
+        }}
+        function completeProgress() {{
+            progressBar.style.width = '100%';
+            setTimeout(function() {{ progressBar.style.width = '0%'; }}, 300);
+        }}
+        function hideLoading() {{
+            loadingOverlay.style.opacity = '0';
+            setTimeout(function() {{
+                loadingOverlay.style.display = 'none';
+                completeProgress();
+                updateUI();
+            }}, 300);
+        }}
+        function showLoading() {{
+            loadingOverlay.style.display = 'flex';
+            loadingOverlay.style.opacity = '1';
+            startProgress();
+        }}
+        function goBack() {{
+            try {{
+                if (iframe.contentWindow.history.length > 1) {{
+                    iframe.contentWindow.history.back();
+                    showLoading();
+                    setTimeout(hideLoading, 800);
+                }} else {{
+                    window.history.back();
+                }}
+            }} catch(e) {{
+                window.history.back();
+            }}
+        }}
+        function refreshPage() {{
+            showLoading();
+            try {{ iframe.contentWindow.location.reload(); }} catch(e) {{ iframe.src = iframe.src; }}
+            setTimeout(hideLoading, 1200);
+        }}
+        
+        iframe.onload = function() {{ hideLoading(); updateUI(); }};
+        setTimeout(function() {{
+            if (iframe.contentDocument && iframe.contentDocument.readyState === 'complete') hideLoading();
+        }}, 500);
+    </script>
+</body>
+</html>'''
+        return html
 
 
 # ==================== 字母/数字筛选辅助方法 ====================
@@ -2179,7 +1538,6 @@ class Spider(Spider):
         self.db_exts = ['db', 'sqlite', 'sqlite3', 'db3']
         self.code_exts = ['php', 'py', 'js', 'css', 'html', 'htm', 'xml', 'sh', 'bash']
         self.archive_exts = ['zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz']
-        self.comic_exts = ['pdf', 'epub']
         
         self.common_cover_names = [
             'cover', 'folder', 'album', 'front', 'back', 'disc', 'cd',
@@ -2288,9 +1646,7 @@ class Spider(Spider):
         self.session.mount('https://', adapter)
         
         self._init_cache_dirs()
-        self._init_comic_dirs()
         
-        # 短视频API列表
         self.short_video_apis = [
             {"name": "🎬 小姐姐1", "url": "http://av.npcq.cn/pc.php"},
             {"name": "🎬 小姐姐2", "url": "https://diskgirl.com/get/get2.php"},
@@ -2330,7 +1686,6 @@ class Spider(Spider):
         self.cached_radio_ids = set()
         self._load_cached_radio_ids()
         
-        # 画廊API列表
         self.gallery_apis = [
             {"name": "🎨 图源B", "url": "https://api.uumnet.com/api/mn2.php", "type": "random"},
             {"name": "🎨 图源C", "url": "https://api.uumnet.com/api/mn3.php", "type": "random"},
@@ -2359,12 +1714,13 @@ class Spider(Spider):
             {"name": "🌅必应每日一图", "url": "https://bing.img.run/rand.php", "type": "random"},
         ]
         
-        # 删除模式相关
+        # 删除模式状态
         self.delete_mode_enabled = False
         self.delete_mode_dir = None
         self._pending_return_dir = None
-        self._current_page = 1
+        self._current_page = 1  # 保存当前页码
         
+        # 连点删除相关变量
         self.click_count = {}
         self.click_timer = {}
         
@@ -2372,10 +1728,204 @@ class Spider(Spider):
         os.makedirs(self.trash_dir, exist_ok=True)
         self.delete_icon = "https://img.icons8.com/color/96/000000/delete-forever.png"
         
-        # 动作/工具/书签浏览器
-        self.web_action_browser = WebActionBrowser()
+        # 网页浏览常用网站列表
+        self.webview_websites = WEBVIEW_WEBSITES
     
+    # ==================== 网页浏览功能方法 ====================
+    
+    def _get_webview_vod(self, name, url):
+        import random
+        numid = f"{random.randint(1, 999):03d}"
+        
+        if url == "action:input":
+            config = {
+                'actionId': '单项输入',
+                'id': 'text',
+                'type': 'input',
+                'title': '网址输入',
+                'tip': '请输入网址，例如：www.baidu.com',
+                'value': '',
+                'msg': '请输入网址'
+            }
+        else:
+            config = {
+                'actionId': 'OPEN_URL',
+                'type': 'browser',
+                'title': name,
+                'url': url
+            }
+        
+        return {
+            'vod_id': json.dumps(config, ensure_ascii=False),
+            'vod_name': name,
+            'vod_pic': f"https://picsum.photos/200/300?random={numid}",
+            'vod_tag': 'action'
+        }
+    
+    def _webview_category_content(self, pg):
+        vlist = []
+        for website in self.webview_websites:
+            vlist.append(self._get_webview_vod(website['name'], website['url']))
+        return {'list': vlist, 'page': 1, 'pagecount': 1, 'limit': len(vlist), 'total': len(vlist)}
+    
+    def action(self, action_str):
+        try:
+            if isinstance(action_str, str):
+                try:
+                    obj = json.loads(action_str)
+                except:
+                    if action_str.startswith(('http://', 'https://')):
+                        return self._handle_webview(action_str)
+                    obj = {"action": action_str}
+            else:
+                obj = action_str
+            
+            act = None
+            if isinstance(obj, dict):
+                act = obj.get('actionId', obj.get('action', ''))
+                value = obj.get('value', '')
+            else:
+                act = str(obj) if obj else ''
+                value = ''
+            
+            if act == '单项输入':
+                if isinstance(value, dict) and "text" in value:
+                    url = value["text"]
+                    if url:
+                        if not url.startswith(('http://', 'https://')):
+                            url = 'https://' + url
+                        return self._handle_webview(url)
+                elif isinstance(value, str) and value and value.strip():
+                    if not value.startswith(('http://', 'https://')):
+                        value = 'https://' + value
+                    return self._handle_webview(value)
+                else:
+                    return {
+                        'actionId': '单项输入',
+                        'id': 'text',
+                        'type': 'input',
+                        'title': '网址输入',
+                        'tip': '请输入网址，例如：www.baidu.com',
+                        'value': '',
+                        'msg': '请输入网址'
+                    }
+            
+            if act == 'OPEN_URL':
+                url = obj.get('url', '')
+                if url:
+                    return self._handle_webview(url)
+            
+            if isinstance(action_str, str) and action_str.startswith(('http://', 'https://')):
+                return self._handle_webview(action_str)
+            
+            return {
+                'actionId': '单项输入',
+                'id': 'text',
+                'type': 'input',
+                'title': '网址输入',
+                'tip': '请输入网址',
+                'value': '',
+                'msg': '请输入网址'
+            }
+            
+        except Exception as e:
+            print(f"❌ action 处理错误: {e}")
+            return {
+                'actionId': '单项输入',
+                'id': 'text',
+                'type': 'input',
+                'title': '网址输入',
+                'tip': '请输入网址',
+                'value': '',
+                'msg': '请输入网址'
+            }
+    
+    def _handle_webview(self, url, name=""):
+        print(f"🌐 打开网页: {url}")
+        
+        if not name:
+            from urllib.parse import urlparse
+            parsed = urlparse(url)
+            name = parsed.netloc.replace('www.', '') if parsed.netloc else '网页'
+        
+        is_local = WebViewBrowser.is_local_url(url)
+        
+        if is_local:
+            html = WebViewBrowser.build_themed_html(url, name)
+            html_encoded = base64.b64encode(html.encode('utf-8')).decode('utf-8')
+            data_url = f'data:text/html;charset=utf-8;base64,{html_encoded}'
+            return {'action': {'actionId': 'OPEN_URL', 'type': 'browser', 'title': name, 'url': data_url}}
+        else:
+            return {'action': {'actionId': 'OPEN_URL', 'type': 'browser', 'title': name, 'url': url}}
+
+    # ==================== 删除模式管理方法 ====================
+    def _enable_delete_mode(self, target_path):
+        self.delete_mode_enabled = True
+        self.delete_mode_dir = target_path
+        return True
+    
+    def _disable_delete_mode(self):
+        self.delete_mode_enabled = False
+        self.delete_mode_dir = None
+        self._pending_return_dir = None
+        return True
+    
+    def _is_delete_mode_active_in_path(self, path):
+        if not self.delete_mode_enabled or not self.delete_mode_dir:
+            return False
+        current_norm = os.path.normpath(path)
+        active_norm = os.path.normpath(self.delete_mode_dir)
+        return current_norm == active_norm or current_norm.startswith(active_norm + os.sep)
+    
+    # ==================== 删除文件夹方法 ====================
+    def _delete_folder_to_trash(self, folder_path):
+        try:
+            if not os.path.exists(folder_path):
+                return False, "文件夹不存在"
+            
+            if not os.path.isdir(folder_path):
+                return False, "不是文件夹"
+            
+            folder_name = os.path.basename(folder_path)
+            unique_name = f"{int(time.time())}_{folder_name}"
+            trash_path = os.path.join(self.trash_dir, unique_name)
+            
+            shutil.move(folder_path, trash_path)
+            
+            self.dir_cache.pop(f"dir_{folder_path}", None)
+            self.dir_cache_time.pop(f"dir_{folder_path}", None)
+            self.audio_list_cache.pop(folder_path, None)
+            self.audio_list_cache_time.pop(folder_path, None)
+            
+            cache_keys_to_delete = []
+            for key in self.dir_cache.keys():
+                if key.startswith(f"dir_{folder_path}"):
+                    cache_keys_to_delete.append(key)
+            for key in cache_keys_to_delete:
+                self.dir_cache.pop(key, None)
+                self.dir_cache_time.pop(key, None)
+            
+            return True, f"已删除文件夹: {folder_name} (及其所有内容)"
+        except Exception as e:
+            return False, f"删除文件夹失败: {e}"
+
+    def _load_cached_radio_ids(self):
+        try:
+            if os.path.exists(RADIO_COVER_CACHE_DIR):
+                for filename in os.listdir(RADIO_COVER_CACHE_DIR):
+                    if filename.endswith('.jpg') and not filename == '.nomedia':
+                        radio_id = filename.replace('.', '').replace('jpg', '')
+                        if radio_id and radio_id.isdigit():
+                            self.cached_radio_ids.add(radio_id)
+        except:
+            pass
+    
+    def _refresh_cached_radio_ids(self):
+        self.cached_radio_ids.clear()
+        self._load_cached_radio_ids()
+
     def _init_cache_dirs(self):
+        """初始化缓存目录并创建 .nomedia 文件防止相册扫描"""
         try:
             tmp_dir = '/storage/emulated/0/tmp/'
             os.makedirs(tmp_dir, exist_ok=True)
@@ -2383,6 +1933,7 @@ class Spider(Spider):
             os.makedirs(LYRICS_CACHE_DIR, exist_ok=True)
             os.makedirs(RADIO_COVER_CACHE_DIR, exist_ok=True)
             
+            # 为所有缓存目录创建 .nomedia 文件，防止相册扫描
             nomedia_dirs = [tmp_dir, COVER_CACHE_DIR, LYRICS_CACHE_DIR, RADIO_COVER_CACHE_DIR, self.trash_dir]
             for dir_path in nomedia_dirs:
                 if os.path.exists(dir_path):
@@ -2393,25 +1944,12 @@ class Spider(Spider):
                         print(f"✅ 已创建 .nomedia: {dir_path}")
         except Exception as e:
             print(f"⚠️ 创建 .nomedia 失败: {e}")
-    
-    def _init_comic_dirs(self):
-        try:
-            os.makedirs(COMIC_CACHE_DIR, exist_ok=True)
-            os.makedirs(COMIC_PREVIEW_DIR, exist_ok=True)
-            
-            for dir_path in [COMIC_CACHE_DIR, COMIC_PREVIEW_DIR]:
-                nomedia_path = os.path.join(dir_path, '.nomedia')
-                if not os.path.exists(nomedia_path):
-                    with open(nomedia_path, 'w') as f:
-                        f.write('# This file prevents media scanning in this directory\n')
-            print("✅ 漫画缓存目录初始化完成")
-        except Exception as e:
-            print(f"⚠️ 漫画缓存目录初始化失败: {e}")
-    
+
     def log(self, msg):
         if self.debug_mode:
             print(f"🔍 [DEBUG] {msg}")
-    
+
+    # ==================== 工具函数 ====================
     def b64u_encode(self, data):
         if isinstance(data, str):
             data = data.encode('utf-8')
@@ -2449,9 +1987,6 @@ class Spider(Spider):
     def is_image_file(self, ext):
         return ext in self.image_exts
     
-    def is_comic_file(self, ext):
-        return ext in self.comic_exts
-    
     def is_list_file(self, ext):
         return ext in self.list_exts
     
@@ -2487,12 +2022,16 @@ class Spider(Spider):
         
         return False
     
+    # ==================== 封面缓存目录 ====================
     def _get_cover_cache_dir(self):
         return COVER_CACHE_DIR
     
     def _get_cached_cover_path(self, audio_path):
+        """获取缓存的封面路径，支持新旧两种文件名格式"""
         file_hash = hashlib.md5(audio_path.encode()).hexdigest()
+        # 新格式（带点隐藏）
         cache_file1 = f"{COVER_CACHE_DIR}.{file_hash}.jpg"
+        # 旧格式（不带点）
         cache_file2 = f"{COVER_CACHE_DIR}{file_hash}.jpg"
         if os.path.exists(cache_file1):
             return cache_file1
@@ -2507,6 +2046,7 @@ class Spider(Spider):
         if os.path.exists(COVER_CACHE_DIR) and os.path.isdir(COVER_CACHE_DIR):
             try:
                 for filename in os.listdir(COVER_CACHE_DIR):
+                    # 跳过 .nomedia 文件
                     if filename == '.nomedia':
                         continue
                     file_path = os.path.join(COVER_CACHE_DIR, filename)
@@ -2625,28 +2165,12 @@ class Spider(Spider):
             'total': 1
         }
     
-    def _clear_comic_cache_content(self):
-        total_count, size_str = ComicReader.clear_all_cache()
-        
-        result_msg = f"✅ 已清除漫画缓存\n\n📚 共清除 {total_count} 个文件\n💾 释放空间: {size_str}\n\n重新打开漫画时会重新生成"
-        
-        return {
-            'list': [{
-                'vod_id': 'clear_comic_result',
-                'vod_name': result_msg,
-                'vod_pic': self._generate_colored_icon("#9C27B0", "📚"),
-                'vod_remarks': '清除完成',
-                'style': {'type': 'list'},
-                'vod_player': '书'
-            }],
-            'page': 1,
-            'pagecount': 1,
-            'limit': 1,
-            'total': 1
-        }
-    
+    # ==================== 电台封面缓存方法 ====================
     def _get_radio_cached_cover_path(self, radio_id):
+        """获取缓存的电台封面路径"""
+        # 新格式（带点隐藏）
         cache_file1 = f"{RADIO_COVER_CACHE_DIR}.{radio_id}.jpg"
+        # 旧格式（不带点）
         cache_file2 = f"{RADIO_COVER_CACHE_DIR}{radio_id}.jpg"
         if os.path.exists(cache_file1):
             return cache_file1
@@ -2659,6 +2183,7 @@ class Spider(Spider):
             return None
         
         try:
+            # 使用带点的隐藏文件名
             cache_file = f"{RADIO_COVER_CACHE_DIR}.{radio_id}.jpg"
             
             if os.path.exists(cache_file):
@@ -2689,21 +2214,7 @@ class Spider(Spider):
         except:
             return None
     
-    def _load_cached_radio_ids(self):
-        try:
-            if os.path.exists(RADIO_COVER_CACHE_DIR):
-                for filename in os.listdir(RADIO_COVER_CACHE_DIR):
-                    if filename.endswith('.jpg') and not filename == '.nomedia':
-                        radio_id = filename.replace('.', '').replace('jpg', '')
-                        if radio_id and radio_id.isdigit():
-                            self.cached_radio_ids.add(radio_id)
-        except:
-            pass
-    
-    def _refresh_cached_radio_ids(self):
-        self.cached_radio_ids.clear()
-        self._load_cached_radio_ids()
-    
+    # ==================== 查找本地封面图片并缓存 ====================
     def find_local_cover_image(self, audio_path):
         audio_dir = os.path.dirname(audio_path)
         audio_name = os.path.splitext(os.path.basename(audio_path))[0]
@@ -2723,6 +2234,7 @@ class Spider(Spider):
     def cache_cover_image(self, audio_path, source_path):
         try:
             file_hash = hashlib.md5(audio_path.encode()).hexdigest()
+            # 使用带点的隐藏文件名，防止相册扫描
             cache_file = f"{COVER_CACHE_DIR}.{file_hash}.jpg"
             
             if os.path.exists(cache_file):
@@ -2741,6 +2253,7 @@ class Spider(Spider):
         except:
             return None
     
+    # ==================== 极速封面获取接口 ====================
     def get_audio_cover_ultra_fast(self, file_path):
         ext = self.get_file_ext(file_path)
         
@@ -2780,6 +2293,7 @@ class Spider(Spider):
                         img_data = UltraFastCoverExtractor._compress_image(img_data, max_size=(300, 300), quality=65)
                     
                     file_hash = hashlib.md5(file_path.encode()).hexdigest()
+                    # 使用带点的隐藏文件名
                     cache_file = f"{COVER_CACHE_DIR}.{file_hash}.jpg"
                     with open(cache_file, 'wb') as f:
                         f.write(img_data)
@@ -2817,6 +2331,7 @@ class Spider(Spider):
         for path in uncached_paths:
             self.preload_executor.submit(load_single, path)
     
+    # ==================== 优化的音频收集方法 ====================
     def collect_audios_in_dir(self, dir_path):
         try:
             if not os.path.exists(dir_path) or not os.path.isdir(dir_path):
@@ -2871,6 +2386,7 @@ class Spider(Spider):
         except:
             return []
     
+    # ==================== 歌曲信息提取 ====================
     def extract_song_info(self, filename):
         name = os.path.splitext(filename)[0]
         
@@ -2935,6 +2451,7 @@ class Spider(Spider):
         
         return artist, song
     
+    # ==================== 腾讯API网络获取（歌词） ====================
     def search_qq_song(self, song_name, artist_name=""):
         song_name = re.sub(r'-\d{8,}-\d+$', '', song_name)
         song_name = re.sub(r'-\d+$', '', song_name)
@@ -3030,6 +2547,7 @@ class Spider(Spider):
         
         return None
     
+    # ==================== 本地歌词 ====================
     def _get_local_lyrics(self, file_path):
         audio_dir = os.path.dirname(file_path)
         audio_name = os.path.splitext(os.path.basename(file_path))[0]
@@ -3080,6 +2598,7 @@ class Spider(Spider):
         
         return None
     
+    # ==================== 音频信息添加 ====================
     def _add_audio_info_fast(self, result, file_path):
         filename = os.path.basename(file_path)
         artist, song = self.extract_song_info(filename)
@@ -3111,6 +2630,7 @@ class Spider(Spider):
                 except:
                     pass
     
+    # ==================== 扫描目录 ====================
     def scan_directory(self, dir_path):
         try:
             if not os.path.exists(dir_path) or not os.path.isdir(dir_path):
@@ -3174,8 +2694,6 @@ class Spider(Spider):
             return '🎵'
         if ext in self.image_exts:
             return '🖼'
-        if ext in self.comic_exts:
-            return '📚'
         if ext in self.list_exts:
             return '📋'
         if ext in self.lrc_exts:
@@ -3221,6 +2739,7 @@ class Spider(Spider):
         ]
         return any(p in u for p in patterns)
     
+    # ==================== 彩色图标生成 ====================
     def _generate_colored_icon(self, color, text):
         svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
             <rect width="200" height="200" rx="40" ry="40" fill="{color}"/>
@@ -3229,6 +2748,7 @@ class Spider(Spider):
         </svg>'''
         return f"data:image/svg+xml;base64,{base64.b64encode(svg.encode()).decode()}"
     
+    # ==================== JSON文件解析 ====================
     def parse_json_file(self, file_path):
         items = []
         try:
@@ -3416,9 +2936,11 @@ class Spider(Spider):
                     return str(value).strip()
         return ''
     
+    # ==================== 数据库文件解析 ====================
     def parse_db_file(self, file_path):
         return self.db_reader.read_sqlite(file_path, MAX_DB_RESULTS)
     
+    # ==================== 在线直播 ====================
     def _get_domain_from_url(self, url):
         try:
             from urllib.parse import urlparse
@@ -3571,6 +3093,7 @@ class Spider(Spider):
             pass
         return programs
     
+    # ==================== TXT文件解析 ====================
     def _is_txt_live_source(self, content, file_path=None):
         if ',#genre#' in content.lower():
             return True
@@ -3728,22 +3251,16 @@ class Spider(Spider):
         except:
             return []
     
+    # ==================== 首页和分类 ====================
     def homeContent(self, filter):
         classes = []
+        classes.append({"type_id": self.live_category_id, "type_name": self.live_category_name})
+        classes.append({"type_id": "online_radio", "type_name": "📻 网络电台"})
         for i, path in enumerate(self.root_paths):
             if os.path.exists(path):
                 name = self.path_to_chinese.get(path, os.path.basename(path.rstrip('/')) or f'目录{i}')
                 classes.append({"type_id": f"root_{i}", "type_name": name})
-        classes.append({"type_id": "recent", "type_name": "最近添加"})
-        classes.append({"type_id": self.live_category_id, "type_name": self.live_category_name})
-        classes.append({"type_id": "online_radio", "type_name": "📻 网络电台"})
-        classes.append({"type_id": "short_video", "type_name": "📱 短视频"})
-        classes.append({"type_id": "gallery", "type_name": "🎨 画廊"})
-        
-        # 添加动作/工具/书签分类
-        web_home = self.web_action_browser.get_home_content()
-        for cls in web_home['class']:
-            classes.append(cls)
+
         
         alphabet_row1 = ['全部', 'A', 'B', 'C', 'D', 'E', 'F']
         alphabet_row2 = ['G', 'H', 'I', 'J', 'K', 'L', 'M']
@@ -3860,8 +3377,7 @@ class Spider(Spider):
                     "key": "action",
                     "name": "🗑️ 缓存管理",
                     "value": [
-                        {"n": "📚 清除漫画缓存", "v": "clear_comic_cache"},
-                        {"n": "🖼️ 清除封面缓存", "v": "clear_cover_cache"},
+                        {"n": "🗑️ 清除封面缓存", "v": "clear_cover_cache"},
                         {"n": "📝 清除歌词缓存", "v": "clear_lyrics_cache"},
                         {"n": "📻 清除电台封面缓存", "v": "clear_radio_cover_cache"}
                     ]
@@ -3870,6 +3386,7 @@ class Spider(Spider):
         
         return {'class': classes, 'filters': filters}
     
+    # ==================== 在线电台 ====================
     def _online_radio_content(self, category_id, pg):
         pg = int(pg) if pg else 1
         
@@ -4102,6 +3619,7 @@ class Spider(Spider):
         
         return {"list": [vod]}
     
+    # ==================== 本地代理 ====================
     def localProxy(self, param):
         url = param.get("url", "")
         if not url:
@@ -4158,6 +3676,7 @@ class Spider(Spider):
         
         return None
     
+    # ==================== 短视频 ====================
     def _get_video_cover(self, api_name):
         cover_apis = self.video_cover_apis
         idx = hash(api_name) % len(cover_apis)
@@ -4295,6 +3814,7 @@ class Spider(Spider):
             "vod_player": "短"
         }
     
+    # ==================== 在线直播分类 ====================
     def _live_category_content(self, pg):
         vlist = []
         for idx, source in enumerate(self.online_live_sources):
@@ -4312,6 +3832,7 @@ class Spider(Spider):
             })
         return {'list': vlist, 'page': pg, 'pagecount': 1, 'limit': len(vlist), 'total': len(vlist)}
     
+    # ==================== 直播源详情页 - 将UA信息编码到URL中 ====================
     def _live_source_detail(self, source_id):
         source = next((s for s in self.online_live_sources if s['id'] == source_id), None)
         if not source:
@@ -4399,6 +3920,7 @@ class Spider(Spider):
             'playerType': source.get('playerType', 2)
         }]}
     
+    # ==================== 最近添加 ====================
     def _recent_content(self, pg):
         all_files = []
         for path in self.root_paths:
@@ -4445,7 +3967,7 @@ class Spider(Spider):
                         continue
                     if (self.is_media_file(ext) or self.is_audio_file(ext) or 
                         self.is_image_file(ext) or self.is_list_file(ext) or
-                        self.is_db_file(ext) or self.is_comic_file(ext) or
+                        self.is_db_file(ext) or
                         self.is_code_file(ext) or self.is_archive_file(ext) or ext == 'txt'):
                         mtime = os.path.getmtime(full_path)
                         if time.time() - mtime < 7 * 24 * 3600:
@@ -4454,20 +3976,6 @@ class Spider(Spider):
             pass
     
     def _create_recent_item(self, f):
-        if ComicReader.is_supported(f['name']):
-            cover_url = ComicReader.get_cover_url(f['path'])
-            size_bytes = os.path.getsize(f['path'])
-            size_mb = f"{size_bytes / 1024 / 1024:.1f}MB" if size_bytes > 0 else ""
-            return {
-                'vod_id': f['path'],
-                'vod_name': f"📚 {f['name']}",
-                'vod_pic': cover_url or ComicReader._get_default_comic_icon(f['ext']),
-                'vod_play_url': f"阅读${f['path']}",
-                'vod_remarks': f"{f['ext'].upper()}漫画 | {size_mb}",
-                'style': {'type': 'grid', 'ratio': 0.75},
-                'vod_player': '画'
-            }
-        
         if self.is_image_file(f['ext']) or f['ext'].lower() in ['heic', 'heif']:
             return {
                 'vod_id': self.URL_B64U_PREFIX + self.b64u_encode(self.PICS_PREFIX + "file://" + f['path']),
@@ -4668,6 +4176,7 @@ class Spider(Spider):
         else:
             return time.strftime('%m-%d %H:%M', time.localtime(timestamp))
     
+    # ==================== 画廊功能 ====================
     def _gallery_category_content(self, pg):
         vlist = []
         
@@ -4724,6 +4233,7 @@ class Spider(Spider):
         }
         return {'list': [vod]}
     
+    # ==================== 删除功能 ====================
     def _delete_to_trash(self, file_path):
         try:
             if not os.path.exists(file_path):
@@ -4811,6 +4321,7 @@ class Spider(Spider):
             try:
                 shutil.rmtree(self.trash_dir)
                 os.makedirs(self.trash_dir, exist_ok=True)
+                # 重新创建 .nomedia
                 nomedia_path = os.path.join(self.trash_dir, '.nomedia')
                 if not os.path.exists(nomedia_path):
                     with open(nomedia_path, 'w') as f:
@@ -4872,18 +4383,6 @@ class Spider(Spider):
                 'vod_tag': 'delete_folder'
             }
         
-        if ComicReader.is_supported(f['name']):
-            cover_url = ComicReader.get_cover_url(f['path'])
-            return {
-                'vod_id': f'delete_file_{self.b64u_encode(f["path"])}',
-                'vod_name': f"📚 {f['name']}",
-                'vod_pic': cover_url or ComicReader._get_default_comic_icon(f['ext']),
-                'vod_remarks': f'🗑️ 点击删除 - {file_size}',
-                'vod_remarks_color': '#F44336',
-                'style': {'type': 'list'},
-                'vod_player': '书'
-            }
-        
         if self.is_image_file(f['ext']) or f['ext'].lower() in ['heic', 'heif']:
             vod_pic = f"file://{f['path']}"
             vod_name = f"🖼 {f['name']}"
@@ -4920,8 +4419,6 @@ class Spider(Spider):
             return self.file_icons['audio']
         elif ext in self.media_exts:
             return self.file_icons['video']
-        elif ext in self.comic_exts:
-            return "https://img.icons8.com/color/96/000000/comic-book.png"
         elif ext in self.list_exts:
             return self.file_icons['list']
         elif ext in self.db_exts:
@@ -4994,76 +4491,31 @@ class Spider(Spider):
             'total': 2
         }
     
-    def _enable_delete_mode(self, target_path):
-        self.delete_mode_enabled = True
-        self.delete_mode_dir = target_path
-        return True
-    
-    def _disable_delete_mode(self):
-        self.delete_mode_enabled = False
-        self.delete_mode_dir = None
-        self._pending_return_dir = None
-        return True
-    
-    def _is_delete_mode_active_in_path(self, path):
-        if not self.delete_mode_enabled or not self.delete_mode_dir:
-            return False
-        current_norm = os.path.normpath(path)
-        active_norm = os.path.normpath(self.delete_mode_dir)
-        return current_norm == active_norm or current_norm.startswith(active_norm + os.sep)
-    
-    def _delete_folder_to_trash(self, folder_path):
-        try:
-            if not os.path.exists(folder_path):
-                return False, "文件夹不存在"
-            
-            if not os.path.isdir(folder_path):
-                return False, "不是文件夹"
-            
-            folder_name = os.path.basename(folder_path)
-            unique_name = f"{int(time.time())}_{folder_name}"
-            trash_path = os.path.join(self.trash_dir, unique_name)
-            
-            shutil.move(folder_path, trash_path)
-            
-            self.dir_cache.pop(f"dir_{folder_path}", None)
-            self.dir_cache_time.pop(f"dir_{folder_path}", None)
-            self.audio_list_cache.pop(folder_path, None)
-            self.audio_list_cache_time.pop(folder_path, None)
-            
-            cache_keys_to_delete = []
-            for key in self.dir_cache.keys():
-                if key.startswith(f"dir_{folder_path}"):
-                    cache_keys_to_delete.append(key)
-            for key in cache_keys_to_delete:
-                self.dir_cache.pop(key, None)
-                self.dir_cache_time.pop(key, None)
-            
-            return True, f"已删除文件夹: {folder_name} (及其所有内容)"
-        except Exception as e:
-            return False, f"删除文件夹失败: {e}"
-    
+    # ==================== 详情页 ====================
     def detailContent(self, ids):
         id_val = ids[0]
         
-        # 处理动作/工具/书签分类入口
-        if id_val in ['web_action', 'web_tool', 'web_bookmarks']:
-            return self.web_action_browser.get_category_content(id_val, 1)
-        
-        # 处理 web_action_browser 的 action
-        if id_val.startswith('{') and ('actionId' in id_val or '"action"' in id_val):
+        if id_val.startswith('{'):
             try:
-                result = self.web_action_browser.handle_action(id_val)
-                if result:
-                    return result
+                config = json.loads(id_val)
+                if 'actionId' in config or 'action' in config:
+                    action_result = self.action(id_val)
+                    if action_result and 'action' in action_result:
+                        return {'list': []}
             except:
                 pass
         
-        if id_val.endswith('.epub') or id_val.endswith('.pdf'):
-            if os.path.isfile(id_val) and ComicReader.is_supported(os.path.basename(id_val)):
-                result = ComicReader.get_comic_detail(id_val, os.path.basename(id_val))
-                if result and result.get('list'):
-                    return result
+        if id_val == "webview":
+            return self._webview_category_content(1)
+        
+        if id_val.startswith('{"actionId"') or (id_val.startswith('{') and '"actionId"' in id_val):
+            try:
+                config = json.loads(id_val)
+                if config.get('actionId') == '单项输入' or config.get('actionId') == 'OPEN_URL':
+                    self.action(id_val)
+                    return {'list': []}
+            except:
+                pass
         
         if id_val == 'delete_mode_status':
             self._disable_delete_mode()
@@ -5098,7 +4550,7 @@ class Spider(Spider):
         system_status_ids = [
             'delete_mode_status', 'filter_info', 'clear_result', 
             'clear_lyrics_result', 'clear_radio_result', 'empty_trash_result',
-            'delete_result', 'info', 'delete_mode_closed', 'clear_comic_result', 'action_result'
+            'delete_result', 'info', 'delete_mode_closed'
         ]
         if id_val in system_status_ids:
             return {'list': [{
@@ -5243,9 +4695,6 @@ class Spider(Spider):
             dir_path = self.b64u_decode(id_val[len(self.V_ALL_PREFIX):])
             return self._handle_video_all_detail(dir_path, id_val)
         
-        if os.path.isfile(id_val) and ComicReader.is_supported(os.path.basename(id_val)):
-            return ComicReader.get_comic_detail(id_val, os.path.basename(id_val))
-        
         if not os.path.exists(id_val):
             return {'list': []}
         
@@ -5254,6 +4703,7 @@ class Spider(Spider):
         
         return self._handle_file_detail(id_val)
     
+    # ==================== 辅助方法 ====================
     def _handle_pics_detail(self, decoded, id_val):
         pics_data = decoded[len(self.PICS_PREFIX):]
         if '&&' in pics_data:
@@ -5558,9 +5008,6 @@ class Spider(Spider):
         if self.is_audio_file(ext):
             return self._handle_audio_file_detail(file_path, name, vod)
         
-        if ComicReader.is_supported(name):
-            return ComicReader.get_comic_detail(file_path, name)
-        
         if self.is_image_file(ext) or ext.lower() in ['heic', 'heif']:
             dir_path = os.path.dirname(file_path)
             all_images = self.collect_images_in_dir(dir_path)
@@ -5709,10 +5156,9 @@ class Spider(Spider):
             })
         return {'list': [vod]}
     
+    # ==================== 播放页 ====================
     def playerContent(self, flag, id, vipFlags):
-        if id.startswith('pics://'):
-            return {"parse": 0, "playUrl": "", "url": id, "header": {}, "vod_player": "画"}
-        
+        # 处理直播播放 - 从 URL 中提取 UA 信息
         if '|UAINFO|' in id:
             parts = id.split('|UAINFO|')
             real_url = parts[0]
@@ -5745,6 +5191,7 @@ class Spider(Spider):
                 print(f"❌ 解析UA信息失败: {e}")
                 id = id.split('|UAINFO|')[0]
         
+        # 连点3次删除当前歌曲
         if id.startswith(self.MP3_PREFIX):
             song_key = id
             current_time = time.time()
@@ -5807,9 +5254,6 @@ class Spider(Spider):
         
         if flag == '短视频播放':
             return self._handle_short_video_play(id)
-        
-        if flag in ['PDF漫画', 'EPUB漫画']:
-            return {"parse": 0, "playUrl": "", "url": id, "header": {}, "vod_player": "画"}
         
         if id.startswith(self.PICS_PREFIX):
             return {"parse": 0, "playUrl": "", "url": id, "header": {}, "vod_player": "画"}
@@ -5924,11 +5368,11 @@ class Spider(Spider):
         
         if url.startswith('file://'):
             ext = self.get_file_ext(url[7:])
-            if self.is_image_file(ext) or ext.lower() in ['heic', 'heif'] or ComicReader.is_supported(url[7:]):
+            if self.is_image_file(ext) or ext.lower() in ['heic', 'heif']:
                 result["vod_player"] = "画"
         
         return result
-    
+
     def _handle_mp3_play(self, id):
         file_path = id.replace(self.MP3_PREFIX, '')
         if not os.path.exists(file_path):
@@ -5950,7 +5394,7 @@ class Spider(Spider):
             self._add_audio_info_fast(result, file_path)
         
         return result
-    
+
     def _extract_real_m3u8_url(self, page_url):
         if page_url in self.m3u8_cache:
             return self.m3u8_cache[page_url]
@@ -5981,7 +5425,7 @@ class Spider(Spider):
             return None
         except:
             return None
-    
+
     def _build_headers(self, flag, url):
         from urllib.parse import urlparse
         domain = urlparse(url).netloc
@@ -6008,7 +5452,7 @@ class Spider(Spider):
     def searchContent(self, key, quick, pg="1"):
         pg = int(pg)
         results = []
-        clean_key = re.sub(r'^[📁📂🎬🎵🖼📋📝🗄️🧲📄🖼️🎞️⬅️📚\s]+', '', key.lower())
+        clean_key = re.sub(r'^[📁📂🎬🎵🖼📋📝🗄️🧲📄🖼️🎞️⬅️\s]+', '', key.lower())
         for path in self.root_paths:
             if not os.path.exists(path):
                 continue
@@ -6055,18 +5499,6 @@ class Spider(Spider):
             pass
     
     def _create_search_item(self, f):
-        if ComicReader.is_supported(f['name']):
-            cover_url = ComicReader.get_cover_url(f['path'])
-            return {
-                'vod_id': f['path'],
-                'vod_name': f"📚 {f['name']}",
-                'vod_pic': cover_url or ComicReader._get_default_comic_icon(f['ext']),
-                'vod_play_url': f"阅读${f['path']}",
-                'vod_remarks': f'{f["ext"].upper()}漫画',
-                'style': {'type': 'list'},
-                'vod_player': '画'
-            }
-        
         if self.is_image_file(f['ext']) or f['ext'].lower() in ['heic', 'heif']:
             return {
                 'vod_id': self.URL_B64U_PREFIX + self.b64u_encode(self.PICS_PREFIX + "file://" + f['path']),
@@ -6147,31 +5579,19 @@ class Spider(Spider):
     
     def shutdown(self):
         self.preload_executor.shutdown(wait=False)
-        ComicReader.shutdown_render_executor()
-    
+
+    # ==================== 分类内容（优化删除模式版，使用缓存防止刷新到顶部） ====================
     def categoryContent(self, tid, pg, filter, extend):
         pg = int(pg) if pg else 1
         
+        # 保存当前页码，用于删除后返回
         self._current_page = pg
         
-        # 处理动作/工具/书签分类
-        if tid in ['web_action', 'web_tool', 'web_bookmarks']:
-            return self.web_action_browser.get_category_content(tid, pg)
+        # 处理网页浏览分类
+        if tid == "webview":
+            return self._webview_category_content(pg)
         
-        if tid == "online_radio":
-            cat_id = extend.get("category", "442") if extend and isinstance(extend, dict) else "442"
-            return self._online_radio_content(cat_id, pg)
-        if tid == "short_video":
-            return self._short_video_category_content(pg)
-        if tid == "gallery":
-            return self._gallery_category_content(pg)
-        if tid.startswith("short_video_"):
-            return self._short_video_detail(tid[len("short_video_"):])
-        if tid == self.live_category_id:
-            return self._live_category_content(pg)
-        if tid == 'recent':
-            return self._recent_content(pg)
-        
+        # 获取当前路径（用于删除模式）
         current_path = None
         if tid.startswith("root_"):
             try:
@@ -6182,20 +5602,20 @@ class Spider(Spider):
                 pass
         elif tid.startswith(self.FOLDER_PREFIX):
             current_path = self.b64u_decode(tid[len(self.FOLDER_PREFIX):])
-        elif not tid.startswith(('online_', 'short_video', 'gallery', self.live_category_id, 'recent', 'web_action', 'web_tool', 'web_bookmarks')):
+        elif not tid.startswith(('online_', 'short_video', 'gallery', self.live_category_id, 'recent', 'webview')):
             current_path = tid if os.path.exists(tid) else None
         
+        # 处理筛选器操作
         if extend and isinstance(extend, dict):
             action = extend.get("action", "")
-            if action == "clear_comic_cache":
-                return self._clear_comic_cache_content()
-            elif action == "clear_cover_cache":
+            if action == "clear_cover_cache":
                 return self._clear_cover_cache_content()
             elif action == "clear_lyrics_cache":
                 return self._clear_lyrics_cache_content()
             elif action == "clear_radio_cover_cache":
                 return self._clear_radio_cover_cache_content()
             
+            # 删除模式开关 - 使用缓存，不清除数据，防止页面刷新到顶部
             delete_action = extend.get("delete_mode", "")
             if delete_action == "on":
                 if current_path and os.path.isdir(current_path):
@@ -6234,16 +5654,35 @@ class Spider(Spider):
             elif delete_action == "empty":
                 return self._empty_trash()
         
+        # 特殊分类
+        if tid == "online_radio":
+            cat_id = extend.get("category", "442") if extend and isinstance(extend,dict) else "442"
+            return self._online_radio_content(cat_id, pg)
+        if tid == "short_video":
+            return self._short_video_category_content(pg)
+        if tid == "gallery":
+            return self._gallery_category_content(pg)
+        if tid.startswith("short_video_"):
+            return self._short_video_detail(tid[len("short_video_"):])
+        if tid == self.live_category_id:
+            return self._live_category_content(pg)
+        if tid == 'recent':
+            return self._recent_content(pg)
+        
+        # 普通目录
         if not current_path or not os.path.isdir(current_path):
             return {'list': [], 'page': pg, 'pagecount': 1}
         
         return self._get_category_content_with_delete_mode(tid, pg, filter, extend, current_path)
     
     def _get_category_content_with_delete_mode(self, tid, pg, filter, extend, current_path):
+        """获取目录内容，支持删除模式（使用缓存，防止刷新到顶部）"""
         pg = int(pg) if pg else 1
         
+        # 判断删除模式是否在当前路径激活
         is_delete_mode = self._is_delete_mode_active_in_path(current_path)
         
+        # 获取筛选条件
         filter_value = None
         if extend and isinstance(extend, dict):
             letter_keys = ['letter_row1', 'letter_row2', 'letter_row3', 'letter_row4']
@@ -6255,6 +5694,7 @@ class Spider(Spider):
             if not filter_value and 'digit_row' in extend and extend['digit_row'] and extend['digit_row'] != '全部':
                 filter_value = extend['digit_row']
         
+        # 使用缓存，不清除不重新扫描，防止页面刷新
         cache_key = f"dir_{current_path}"
         if cache_key in self.dir_cache and time.time() - self.dir_cache_time.get(cache_key, 0) < 3600:
             files = self.dir_cache[cache_key]
@@ -6263,6 +5703,7 @@ class Spider(Spider):
             self.dir_cache[cache_key] = files
             self.dir_cache_time[cache_key] = time.time()
         
+        # 应用筛选
         if filter_value and filter_value != '全部':
             for f in files:
                 name = f['name']
@@ -6295,27 +5736,23 @@ class Spider(Spider):
         end = min(start + per_page, total)
         page_files = files[start:end]
         
+        # 预加载音频封面
         audio_paths = []
-        comic_paths = []
         for f in page_files:
-            if not f['is_dir']:
-                if self.is_audio_file(f['ext']):
-                    audio_paths.append(f['path'])
-                elif ComicReader.is_supported(f['name']):
-                    comic_paths.append(f['path'])
-        
+            if not f['is_dir'] and self.is_audio_file(f['ext']):
+                audio_paths.append(f['path'])
         if audio_paths:
             self.preload_covers_batch(audio_paths, max_count=500)
         
-        for comic_path in comic_paths[:50]:
-            self.preload_executor.submit(ComicReader.get_cover_url, comic_path)
-        
+        # 构建列表
         vlist = []
         
+        # 添加返回上级目录的按钮
         parent_item = self._create_parent_item(current_path)
         if parent_item:
             vlist.append(parent_item)
         
+        # 添加删除模式状态指示
         if is_delete_mode:
             status_item = {
                 'vod_id': 'delete_mode_status',
@@ -6329,6 +5766,7 @@ class Spider(Spider):
             }
             vlist.append(status_item)
         
+        # 添加文件列表
         for f in page_files:
             if f['is_dir']:
                 if is_delete_mode:
@@ -6345,6 +5783,7 @@ class Spider(Spider):
                 if item:
                     vlist.append(item)
         
+        # 添加筛选信息
         if filter_value and filter_value != '全部':
             if filter_value == 'all_digits':
                 filter_name = '全部数字'
@@ -6427,21 +5866,6 @@ class Spider(Spider):
                 'vod_remarks': '文件夹',
                 'vod_tag': 'folder',
                 'style': {'type': 'list'}
-            }
-        
-        if ComicReader.is_supported(f['name']):
-            cover_url = ComicReader.get_cover_url(f['path'])
-            size_bytes = os.path.getsize(f['path'])
-            size_mb = f"{size_bytes / 1024 / 1024:.1f}MB" if size_bytes > 0 else ""
-            return {
-                'vod_id': f['path'],
-                'vod_name': f"📚 {f['name']}",
-                'vod_pic': cover_url or ComicReader._get_default_comic_icon(f['ext']),
-                'vod_play_url': f"阅读${f['path']}",
-                'vod_remarks': f'{f["ext"].upper()}漫画 | {size_mb}' if size_mb else f'{f["ext"].upper()}漫画',
-                'vod_tag': 'comic',
-                'style': {'type': 'grid', 'ratio': 0.75},
-                'vod_player': '画'
             }
         
         has_local_lyrics = False
@@ -6692,119 +6116,6 @@ class Spider(Spider):
                 'vod_tag': 'unknown',
                 'style': {'type': 'list'}
             }
-    
-    def action(self, action_str):
-        # 先让 web_action_browser 处理
-        result = self.web_action_browser.handle_action(action_str)
-        if result:
-            # 检查是否是 OPEN_URL 的 action 格式
-            if isinstance(result, dict) and 'action' in result:
-                return result
-            # 如果返回的是 {'list': [...]} 格式，返回给显示
-            if isinstance(result, dict) and 'list' in result:
-                return result
-            # 如果返回的是字符串，显示提示
-            if isinstance(result, str):
-                return {
-                    'list': [{
-                        'vod_id': 'action_result',
-                        'vod_name': result,
-                        'vod_pic': self._generate_colored_icon("#4CAF50", "✓"),
-                        'vod_remarks': '操作完成',
-                        'style': {'type': 'list'},
-                        'vod_player': '书'
-                    }],
-                    'page': 1,
-                    'pagecount': 1
-                }
-            return result
-        
-        # 原有的处理逻辑
-        try:
-            if isinstance(action_str, str):
-                try:
-                    obj = json.loads(action_str)
-                except:
-                    if action_str.startswith(('http://', 'https://')):
-                        return self.web_action_browser._open_url(action_str)
-                    obj = {"action": action_str}
-            else:
-                obj = action_str
-            
-            act = None
-            if isinstance(obj, dict):
-                act = obj.get('actionId', obj.get('action', ''))
-                value = obj.get('value', '')
-            else:
-                act = str(obj) if obj else ''
-                value = ''
-            
-            # 处理单项输入（网址输入框）
-            if act == '单项输入':
-                if isinstance(value, dict) and "text" in value:
-                    url = value["text"].strip()
-                    if url:
-                        if not url.startswith(('http://', 'https://')):
-                            url = 'https://' + url
-                        return self.web_action_browser._open_url(url)
-                elif isinstance(value, str) and value and value.strip():
-                    url = value.strip()
-                    if not url.startswith(('http://', 'https://')):
-                        url = 'https://' + url
-                    return self.web_action_browser._open_url(url)
-                else:
-                    return {
-                        'actionId': '单项输入',
-                        'id': 'text',
-                        'type': 'input',
-                        'title': '🌐 访问网址',
-                        'tip': '请输入网址，例如：www.baidu.com',
-                        'value': '',
-                        'msg': '请输入网址'
-                    }
-            
-            # 处理 OPEN_URL
-            if act == 'OPEN_URL':
-                url = obj.get('url', '')
-                if url:
-                    return self.web_action_browser._open_url(url)
-            
-            # 处理直接传入的网址字符串
-            if isinstance(action_str, str) and action_str.startswith(('http://', 'https://')):
-                return self.web_action_browser._open_url(action_str)
-            
-            # 默认返回输入框
-            return {
-                'actionId': '单项输入',
-                'id': 'text',
-                'type': 'input',
-                'title': '🌐 访问网址',
-                'tip': '请输入网址',
-                'value': '',
-                'msg': '请输入网址'
-            }
-            
-        except Exception as e:
-            print(f"❌ action 处理错误: {e}")
-            return {
-                'actionId': '单项输入',
-                'id': 'text',
-                'type': 'input',
-                'title': '🌐 访问网址',
-                'tip': '请输入网址',
-                'value': '',
-                'msg': '请输入网址'
-            }
-    
-    def _handle_webview(self, url, name=""):
-        print(f"🌐 打开网页: {url}")
-        
-        if not name:
-            from urllib.parse import urlparse
-            parsed = urlparse(url)
-            name = parsed.netloc.replace('www.', '') if parsed.netloc else '网页'
-        
-        return self.web_action_browser._open_url(url)
-    
+
     def destroy(self):
         self.shutdown()
