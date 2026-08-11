@@ -1,0 +1,5 @@
+assets://tvboxTW/本地【天微VIP线】/api.json
+
+http://127.0.0.1:9978/tvboxTW/本地【天微VIP线】/api.json
+
+也就是说，把   assets://   换成   http://127.0.0.1:9978/

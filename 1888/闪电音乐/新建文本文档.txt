@@ -1,0 +1,103 @@
+{
+      "key": "枫叶音乐",
+      "name": "🎤闪电┃枫叶",
+      "type": 3,
+      "api": "https://mpimg.cn/down.php/2090fedb67387ea1a1ad908a94eb0aa6.py",
+      "searchable": 1,
+      "changeable": 1,
+      "quickSearch": 1,
+      "filterable": 1
+    },
+	
+	 {
+      "key": "Cat_听海",
+      "name": "🎤闪电┃听海",
+      "type": 3,
+      "api": "https://15487.kstore.space/tinghai_ting.js",
+      "searchable": 1,
+      "quickSearch": 0,
+      "filterable": 1
+    },
+	
+	{
+      "key": "哔哩戏曲",
+      "name": "🎤闪电｜戏曲",
+      "type": 3,
+      "jar": "https://15487.kstore.space/spider.jar",
+      "api": "csp_Bili",
+      "searchable": 0,
+      "quickSearch": 0,
+      "filterable": 0,
+      "ext": {
+        "cookie": "https://gh-proxy.com/https://raw.githubusercontent.com/IY-CPU/IY/main/lib/blc.png",
+        "json": "https://gh-proxy.com/https://raw.githubusercontent.com/IY-CPU/IY/main/lib/哔哩戏曲.png"
+      },
+      "style": {
+        "type": "rect",
+        "ratio": 1.597
+      }
+    },
+   
+    {
+      "key": "戏曲多多",
+      "name": "🎤闪电｜梨园行",
+      "type": 3,
+      "jar": "https://ym.wya6.cn/tz/wyxs.php;md5;c93ec11c288c461bc5bfded3e1424529",
+      "api": "csp_AppLY",
+      "style": {
+        "type": "list"
+      }
+    },
+	
+	{
+      "key": "WexTangDou",
+      "name": "🎤闪电｜广场舞",
+      "type": 3,
+      "jar": "https://zl.wpscdn.cn/2026/07/29/space_img/3a24811b-1e67-44f4-ac86-21660c46841b.png;md5;48534c2903b56915217484979218701c",
+      "api": "csp_WexTangDouGuard",
+      "searchable": 1,
+      "changeable": 0,
+      "style": {
+        "type": "rect",
+        "ratio": 2
+      }
+    },
+	
+	{
+      "key": "哔哩相声",
+      "name": "🎤闪电｜相声",
+      "type": 3,
+      "jar": "https://15487.kstore.space/spider.jar",
+      "api": "csp_Bili",
+      "searchable": 0,
+      "quickSearch": 0,
+      "filterable": 0,
+      "ext": {
+        "cookie": "https://gh-proxy.com/https://raw.githubusercontent.com/IY-CPU/IY/main/lib/blc.png",
+        "json": "https://gh-proxy.com/https://raw.githubusercontent.com/IY-CPU/IY/main/lib/哔哩相声.png"
+      },
+      "style": {
+        "type": "rect",
+        "ratio": 1.597
+      }
+    },
+    {
+      "key": "哔哩小品",
+      "name": "🎤闪电｜小品",
+      "type": 3,
+      "jar": "https://15487.kstore.space/spider.jar",
+      "api": "csp_Bili",
+      "searchable": 0,
+      "quickSearch": 0,
+      "filterable": 0,
+      "ext": {
+        "cookie": "https://gh-proxy.com/https://raw.githubusercontent.com/IY-CPU/IY/main/lib/blc.png",
+        "json": "https://gh-proxy.com/https://raw.githubusercontent.com/IY-CPU/IY/main/lib/哔哩小品.png"
+      },
+      "style": {
+        "type": "rect",
+        "ratio": 1.597
+      }
+    },
+	
+	
