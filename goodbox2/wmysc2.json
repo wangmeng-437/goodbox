@@ -6,6 +6,7 @@
 ],
 
 "sites":[
+{"key":"合集","name":"av索引","type":4,"api":"https://d.kstore.dev/download/6430/1888/json/av.json","searchable":0,"quickSearch":0,"filterable":0,"indexs":1},
 {"key":"csp_XYQHiker_stripchat直播","name":"StripChat直播(XYQHiker)","type":3,"api":"csp_XYQHiker","searchable":1,"quickSearch":0,"filterable":0,"ext":"./stripchat直播.json","style":{"type":"rect","ratio":1.6}},
 {"key":"csp_XBPQ_stripc直播","name":"SC直播(XBPQ)","type":3,"api":"csp_XBPQ","searchable":1,"quickSearch":0,"filterable":0,"ext":"./sc直播.json","style":{"type":"rect","ratio":1.6}},
 {"key":"csp_XYQHiker_直播大全","name":"直播大全(XYQHiker)","type":3,"api":"csp_XYQHiker","searchable":1,"quickSearch":0,"filterable":0,"ext":"./直播大全.json","style":{"type":"rect","ratio":1.6}},

@@ -1,6 +1,7 @@
 {"spider":"https://d.kstore.dev/download/6430/spider.jar;md5;540CB3ABF9883A2DE6D73B0624FFCABC",
 
 "sites":[
+{"key":"合集","name":"av索引","type":4,"api":"https://d.kstore.dev/download/6430/1888/json/av.json","searchable":0,"quickSearch":0,"filterable":0,"indexs":1},
 {"key":"csp_LocalFile","name":"本地视频","type":3,"api":"csp_LocalFile","searchable":0,"quickSearch":0,"filterable":0,"style":{"type":"rect","ratio":1.6}},
 {"key":"lf_js_search","name":"搜索","type":3,"searchable":0,"changeable":1,"quickSearch":0,"filterable":0,"api":"./lib/lf_search3_min.js","indexs":1,"ext":"18+"},
 {"key":"yayazy","name":"鸭鸭资源","type":1,"api":"https://cj.yayazy.net/api.php/provide/vod/?ac=list","searchable":1,"quickSearch":0,"categories":[],"style":{"type":"rect","ratio":1.8}},
