@@ -2,6 +2,7 @@
 
 "sites":[
 {"key":"合集","name":"av索引","type":4,"api":"https://d.kstore.dev/download/6430/1888/json/av.json","searchable":0,"quickSearch":0,"filterable":0,"indexs":1},
+{"key":"蘑菇视频","name":"蘑菇视频","type":3,"api":"./py/蘑菇视频.py","searchable":1,"changeable":1,"quickSearch":1,"filterable":1,"playerType":2},
 {"key":"csp_LocalFile","name":"本地视频","type":3,"api":"csp_LocalFile","searchable":0,"quickSearch":0,"filterable":0,"style":{"type":"rect","ratio":1.6}},
 {"key":"lf_js_search","name":"搜索","type":3,"searchable":0,"changeable":1,"quickSearch":0,"filterable":0,"api":"./lib/lf_search3_min.js","indexs":1,"ext":"18+"},
 {"key":"yayazy","name":"鸭鸭资源","type":1,"api":"https://cj.yayazy.net/api.php/provide/vod/?ac=list","searchable":1,"quickSearch":0,"categories":[],"style":{"type":"rect","ratio":1.8}},
