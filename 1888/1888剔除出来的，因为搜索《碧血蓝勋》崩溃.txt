@@ -1,0 +1,21 @@
+
+{"key":"bili","name":"二小始🅱️哔哩合集","type":3,"api":"csp_BiliGuard","jar":"./wex.jar;md5;1ae5f93acddd711b89098828735eedd6","searchable":1,"quickSearch":1,"filterable":1,"style":{"type":"rect","ratio":1.433},"ext":{"json":"https://support-chat.rongcloud.cn/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBYkE9IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--47a8ff0e68559a89a9a75b37d09a2b0854dc5a8a/bili001.txt"}},
+{"key":"WexikanbotGuard","name":"爱看┃采集","type":3,"api":"csp_WexikanbotGuard","jar":"./wex.jar;md5;1ae5f93acddd711b89098828735eedd6","searchable":1,"changeable":1},
+{"key":"Wexbiliys","name":"‍哔哩🅱️‍影视","type":3,"api":"csp_WexbiliysGuard","jar":"./wex.jar;md5;1ae5f93acddd711b89098828735eedd6","searchable":1,"changeable":1},
+{"key":"biliych","name":"哔哩🅱️歌曲","type":3,"api":"csp_BiliGuard","jar":"./wex.jar;md5;1ae5f93acddd711b89098828735eedd6","searchable":0,"quickSearch":1,"filterable":1,"style":{"type":"rect","ratio":1.433},"ext":{"json":"https://support-chat.rongcloud.cn/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBYkU9IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--3083f43a14e6b59f4bfe248478a3a8765b34bfdd/bilisong.txt"}},
+
+{"key":"哔哩戏曲","name":"🎤戏曲","type":3,"jar":"https://d.kstore.dev/download/6430/1888/%E9%97%AA%E7%94%B5%E9%9F%B3%E4%B9%90/15487spider.jar;md5;D3B253C76C3D4E1CCEF4B84E3644C442","api":"csp_Bili","searchable":0,"quickSearch":0,"filterable":0,"ext":{"cookie":"https://d.kstore.dev/download/6430/1888/%E9%97%AA%E7%94%B5%E9%9F%B3%E4%B9%90/blc.png","json":"https://d.kstore.dev/download/6430/1888/%E9%97%AA%E7%94%B5%E9%9F%B3%E4%B9%90/%E5%93%94%E5%93%A9%E6%88%8F%E6%9B%B2.json"},"style":{"type":"rect","ratio":1.597}},
+{"key":"哔哩相声","name":"相声","type":3,"jar":"https://d.kstore.dev/download/6430/1888/%E9%97%AA%E7%94%B5%E9%9F%B3%E4%B9%90/15487spider.jar;md5;D3B253C76C3D4E1CCEF4B84E3644C442","api":"csp_Bili","searchable":0,"quickSearch":0,"filterable":0,"ext":{"cookie":"https://d.kstore.dev/download/6430/1888/%E9%97%AA%E7%94%B5%E9%9F%B3%E4%B9%90/blc.png","json":"https://d.kstore.dev/download/6430/1888/%E9%97%AA%E7%94%B5%E9%9F%B3%E4%B9%90/%E5%93%94%E5%93%A9%E7%9B%B8%E5%A3%B0.json"},"style":{"type":"rect","ratio":1.597}},
+{"key":"哔哩小品","name":"小品","type":3,"jar":"https://d.kstore.dev/download/6430/1888/%E9%97%AA%E7%94%B5%E9%9F%B3%E4%B9%90/15487spider.jar;md5;D3B253C76C3D4E1CCEF4B84E3644C442","api":"csp_Bili","searchable":0,"quickSearch":0,"filterable":0,"ext":{"cookie":"https://d.kstore.dev/download/6430/1888/%E9%97%AA%E7%94%B5%E9%9F%B3%E4%B9%90/blc.png","json":"https://d.kstore.dev/download/6430/1888/%E9%97%AA%E7%94%B5%E9%9F%B3%E4%B9%90/%E5%93%94%E5%93%A9%E5%B0%8F%E5%93%81.json"},"style":{"type":"rect","ratio":1.597}},
+
+{"key":"枫叶音乐2","name":"🎤枫叶","type":3,"api":"https://d.kstore.dev/download/6430/1888/%E9%97%AA%E7%94%B5%E9%9F%B3%E4%B9%90/%E6%9E%AB%E5%8F%B6%E9%9F%B3%E4%B9%90.py","searchable":1,"changeable":1,"quickSearch":1,"filterable":1},
+{"key":"Cat_听海","name":"🎤听海","type":3,"api":"https://d.kstore.dev/download/6430/1888/%E9%97%AA%E7%94%B5%E9%9F%B3%E4%B9%90/tinghai_ting.js","searchable":1,"quickSearch":0,"filterable":1},
+{"key":"戏曲多多","name":"🎤梨园行","type":3,"jar":"https://d.kstore.dev/download/6430/1888/%E9%97%AA%E7%94%B5%E9%9F%B3%E4%B9%90/%E6%A2%A8%E5%9B%AD%E8%A1%8C.jar;md5;c93ec11c288c461bc5bfded3e1424529","api":"csp_AppLY","style":{"type":"list"}},
+{"key":"WexTangDou","name":"🎤广场舞","type":3,"jar":"https://d.kstore.dev/download/6430/1888/%E9%97%AA%E7%94%B5%E9%9F%B3%E4%B9%90/%E5%B9%BF%E5%9C%BA%E8%88%9E.jar;md5;48534c2903b56915217484979218701c","api":"csp_WexTangDouGuard","searchable":1,"changeable":0,"style":{"type":"rect","ratio":2}},
+
+
+这是备份,1888.json 里，改成了二小始后边的:
+{"key":"哔哩合集","name":"🅱哔哩🔹合集","type":3,"api":"csp_Bili","jar":"https://d.kstore.dev/download/6430/1888/kjtw3.jar;md5;1967263D6F5816F1347F24AC3B77F8F9","searchable":1,"quickSearch":0,"filterable":0,"changeable":0,"style":{"type":"rect","ratio":1.433},"ext":{"json":"https://d.kstore.dev/download/6430/1888/json/%E5%93%94%E5%93%A9%E5%90%88%E9%9B%86.json","cookie":"http://127.0.0.1:9978/file/TVBox/bili_cookie.txt"}},
+
+不能用了
+{"key":"直播","name":"橘汁🐱电视直播","type":3,"api":"./py/%E7%9B%B4%E6%92%AD.py"},
