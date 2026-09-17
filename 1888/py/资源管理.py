@@ -102,7 +102,7 @@ ONLINE_LIVE_SOURCES = [
         {
         "id": "gongdian_live",
         "name": "被我破解-宫殿直播",
-        "url": "https://d.kstore.dev/download/6430/1888/txt/gongdian",
+        "url": "https://gb.hfr1107.top/https://raw.githubusercontent.com/wangmeng-437/goodbox/refs/heads/main/1888/txt/gongdian",
         "cover": TV_COVER,
         "remarks": "用1DM+下载，或OK影视Pro手机版",
         "type": "m3u",
