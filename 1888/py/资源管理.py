@@ -63,7 +63,7 @@ ONLINE_LIVE_SOURCES = [
     {
         "id": "migu_live",
         "name": "📺 咪咕直播",
-        "url": "https://d.kstore.dev/download/6430/1888/txt/zhibo",
+        "url": "https://gb.hfr1107.top/https://raw.githubusercontent.com/wangmeng-437/goodbox/refs/heads/main/1888/txt/zhibo",
         "cover": TV_COVER,
         "remarks": "央视/卫视直播",
         "type": "m3u",
@@ -74,7 +74,7 @@ ONLINE_LIVE_SOURCES = [
     {
         "id": "kulao_tv",
         "name": "小猛子",
-        "url": "https://d.kstore.dev/download/6430/1888/txt/live.m3u",
+        "url": "https://gb.hfr1107.top/https://raw.githubusercontent.com/wangmeng-437/goodbox/refs/heads/main/1888/txt/live.m3u",
         "cover": TV_COVER,
         "remarks": "王采薇是个坏蛋玩意儿",
         "type": "m3u",
@@ -84,7 +84,7 @@ ONLINE_LIVE_SOURCES = [
     {
         "id": "Kimentanm",
         "name": "王采薇大臭宝",
-        "url": "https://d.kstore.dev/download/6430/1888/txt/iptv.m3u",
+        "url": "https://gb.hfr1107.top/https://raw.githubusercontent.com/wangmeng-437/goodbox/refs/heads/main/1888/txt/iptv.m3u",
         "cover": TV_COVER,
         "remarks": "每天都要打PP",
         "type": "m3u",
